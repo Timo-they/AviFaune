@@ -19,6 +19,7 @@ update_photo_menu(name_photo: str, id_serie: int, series: dict)
 show_photo(name_photo: str, id_serie: int, series: dict)
 
  # # # # # # # # # MAIN FUNCTIONS # # # # # # # # # 
+
 # Menu déroulant Fichier
 Bouton Fichier->Ouvrir -> open_folder(folder_path: str)
 Bouton Fichier->Exporter les statistiques -> export_stats()
