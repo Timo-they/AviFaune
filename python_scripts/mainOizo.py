@@ -5,7 +5,7 @@ from PyQt5.QtGui import * # PyQt module for graphics OpenGL-based, fonts, etc...
 from IHM import Ui_MainWindow
 
 class MainWindow(QMainWindow, Ui_MainWindow):
-    
+
     def __init__(self) -> None: # create default constructor
        super(MainWindow, self).__init__()
        self.setupUi(self)
@@ -18,7 +18,7 @@ def main():
     # Pass in sys.argv to allow command line arguments for your app.
     # If you know you won't use command line arguments QApplication([]) works too.
 
-    C_INIT_FULL_SCREEN = 0 # full-screen GUI (0 : OFF, 1 : 0N) 
+    C_INIT_FULL_SCREEN = 1 # full-screen GUI (0 : OFF, 1 : 0N)
 
     h_application = QApplication(sys.argv) # create an application instance from the QApplication() class
     # only one instance of application is allowed per main program
@@ -39,4 +39,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-    
