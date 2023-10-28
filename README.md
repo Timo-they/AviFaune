@@ -35,12 +35,12 @@ show_photo(name_photo: str, id_serie: int, series: dict) : Fonction qui change l
 ## MAIN FUNCTIONS
 
 #### Menu déroulant Fichier
-Bouton Fichier->Ouvrir -> open_folder(folder_path: str)
+Bouton Fichier->Ouvrir -> open_folder() : ouvre une fenetre de dialogue pour choisir quel dossier ouvrir en tant que série
 
-Bouton Fichier->Exporter les statistiques -> export_stats()
+Bouton Fichier->Exporter les statistiques -> export_stats() : exporte les statistiques au format CSV (sans doute)
 
 #### Menu déroulant Série
-Bouton Série->Détection automatique des oiseaux -> detect_oizos()
+Bouton Série->Détection automatique des oiseaux -> detect_oizos() : Ouvre une fenetre de dialogue montrant la progression du traitement de la série
 
 #### Tous les menus
 Clique sur une série sur menu de gauche -> open_serie(id_serie: int)
@@ -50,7 +50,9 @@ Clique sur une photo de la série en bas ou au milieu -> open_photo(name_photo: 
 
 #### Menu Photo
 Clique sur une photo de la série en bas -> open_photo(name_photo: str)
+
 Clique sur flèche droite -> open_next_photo()
+
 Clique sur flèche gauche -> open_previous_photo()
 
 
