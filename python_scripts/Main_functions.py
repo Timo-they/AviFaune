@@ -9,10 +9,21 @@
 # Licence:     Chacalot®
 #-------------------------------------------------------------------------------
 
+# Liste des import
+from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QFileDialog
+
+from tkinter import filedialog
+from tkinter import *
+
 # Menu déroulant Fichier
 ##      Bouton Fichier->Ouvrir
-def open_folder(folder_path: str) :
-    return
+##  Imput :
+##  Ouput : folder_path[str]
+def open_folder() :
+    filename =  filedialog.askdirectory()
+    return(root.filename)
+
 ##      Bouton Fichier->Exporter les statistiques
 def export_stats() :
     return

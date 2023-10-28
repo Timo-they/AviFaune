@@ -13,6 +13,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
+                # Définition de l'arrangement global
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1027, 712)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -22,7 +23,8 @@ class Ui_MainWindow(object):
         self.splitter = QtWidgets.QSplitter(self.centralwidget)
         self.splitter.setOrientation(QtCore.Qt.Vertical)
         self.splitter.setObjectName("splitter")
-        
+
+                #
         self.widget = QtWidgets.QWidget(self.splitter)
         self.widget.setObjectName("widget")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.widget)
@@ -33,7 +35,8 @@ class Ui_MainWindow(object):
         self.splitter_2 = QtWidgets.QSplitter(self.splitter_3)
         self.splitter_2.setOrientation(QtCore.Qt.Horizontal)
         self.splitter_2.setObjectName("splitter_2")
-        
+
+                # Espace de gauche
         self.widget_3 = QtWidgets.QWidget(self.splitter_2)
         self.widget_3.setObjectName("widget_3")
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.widget_3)
@@ -47,20 +50,23 @@ class Ui_MainWindow(object):
         self.pushButton_3 = QtWidgets.QPushButton(self.widget_3)
         self.pushButton_3.setObjectName("pushButton_3")
         self.verticalLayout_3.addWidget(self.pushButton_3)
-        
+
+                #
         self.widget_4 = QtWidgets.QWidget(self.splitter_2)
         self.widget_4.setStyleSheet("background-color: rgb(255, 255, 255);")
         self.widget_4.setObjectName("widget_4")
         self.widget_4.setGeometry(QtCore.QRect(0, 0, 400, 400))
-   
+
+                # Espace de droite
         self.widget_5 = QtWidgets.QWidget(self.splitter_3)
         self.widget_5.setObjectName("widget_5")
         self.horizontalLayout_5 = QtWidgets.QVBoxLayout(self.widget_5)
         self.label = QtWidgets.QLabel(self.widget_5)
-        self.label.setGeometry(QtCore.QRect(120, 0, 71, 31))
+        self.label.setGeometry(QtCore.QRect(120, 120, 71, 31))
         self.label.setObjectName("label")
         self.verticalLayout_2.addWidget(self.splitter_3)
-        
+
+                # Espace du haut (barre des menus)
         self.widget_2 = QtWidgets.QWidget(self.splitter)
         self.widget_2.setObjectName("widget_2")
         self.widget_2.setStyleSheet("background-color: rgb(255, 255, 255);")
