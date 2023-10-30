@@ -24,7 +24,7 @@ class Ui_MainWindow(object):
         self.splitter.setOrientation(QtCore.Qt.Vertical)
         self.splitter.setObjectName("splitter")
 
-                #
+                # Séparateurs
         self.widget = QtWidgets.QWidget(self.splitter)
         self.widget.setObjectName("widget")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.widget)
@@ -51,7 +51,7 @@ class Ui_MainWindow(object):
         self.pushButton_3.setObjectName("pushButton_3")
         self.verticalLayout_3.addWidget(self.pushButton_3)
 
-                #
+                # Espace central
         self.widget_4 = QtWidgets.QWidget(self.splitter_2)
         self.widget_4.setStyleSheet("background-color: rgb(255, 255, 255);")
         self.widget_4.setObjectName("widget_4")
