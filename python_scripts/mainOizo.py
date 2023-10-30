@@ -1,29 +1,15 @@
+
 from PyQt5.QtWidgets import * # PyQt module for graphic components (controls, etc...)
 from PyQt5.QtCore import * # PyQt core-module (threads, I/O, events,..)
 from PyQt5.QtGui import * # PyQt module for graphics OpenGL-based, fonts, etc...
 
-from IHM import Ui_MainWindow
+from mainWindow import MainWindow
 
-class MainWindow(QMainWindow, Ui_MainWindow):
-
-    def __init__(self) -> None: # create default constructor
-       super(MainWindow, self).__init__()
-       self.setupUi(self)
-
+C_INIT_FULL_SCREEN = 0 # full-screen GUI (0 : OFF, 1 : 0N)
 
 def main():
-    import sys # Only needed for access to command line arguments
-
-    # You need one (and only one) QApplication instance per application.
-    # Pass in sys.argv to allow command line arguments for your app.
-    # If you know you won't use command line arguments QApplication([]) works too.
-
-    C_INIT_FULL_SCREEN = 1 # full-screen GUI (0 : OFF, 1 : 0N)
-
-    h_application = QApplication(sys.argv) # create an application instance from the QApplication() class
-    # only one instance of application is allowed per main program
-
-    h_window = MainWindow() # create a main window instance from the MainWindow subclass
+    h_application = QApplication([])
+    h_window = MainWindow()
 
     if C_INIT_FULL_SCREEN:
         h_window.setGeometry(QScreen.availableGeometry(QApplication.primaryScreen())) # full screen
