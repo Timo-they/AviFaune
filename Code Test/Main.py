@@ -25,7 +25,7 @@ class Window(QMainWindow):
     def __init__(self, parent=None):
         """Initializer."""
         super().__init__(parent)
-        self.setWindowTitle("Python Menus & Toolbars")
+        self.setWindowTitle("Fenêtre test")
             # Global widget
         self.centralWidget = QWidget()
 
@@ -74,14 +74,14 @@ class Window(QMainWindow):
         menuFichier.addAction(self.export_stats)
         menuFichier.addAction(self.close)
 
-        menuSerie = menuBar.addMenu("Série")
+        menuMode = menuBar.addMenu("Mode")
+
+        menuSerie = menuMode.addMenu("Série")
         menuSerie.addAction(self.auto_detect)
         menuSerie.addAction(self.suppr_detect)
         menuSerie.addAction(self.imp_photo_suppl)
 
-        menuPhoto = menuBar.addMenu("Mode")
-        menuPhoto.addAction(self.serie)
-        menuPhoto.addAction(self.photo)
+        menuMode.addAction(self.photo)
 
 
     def _createActions(self) :
@@ -94,8 +94,6 @@ class Window(QMainWindow):
         self.imp_photo_suppl = QAction("Importer une photo supplémentaire",self)
 
         self.photo = QAction("Photo",self)
-        self.serie = QAction("Série",self)
-
 
     def _connectActions(self) :
             # Actions pour le menu Fichier
