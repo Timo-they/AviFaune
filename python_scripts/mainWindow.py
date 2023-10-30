@@ -13,6 +13,11 @@ from PyQt5.QtWidgets import * # PyQt module for graphic components (controls, et
 
 from IHM import UiMainWindow
 
+    # Pour pouvoir sauvegarder les données, j'utilise des .txt qu'il faut aller lire
+    # J'utilise script_directory pour accéder au dossier
+import os
+global script_directory
+script_directory = os.getcwd()
 
 class MainWindow(QMainWindow, UiMainWindow):
 
@@ -27,7 +32,7 @@ class MainWindow(QMainWindow, UiMainWindow):
         # TODO : load applciation data
 
        self.setupUi(self)
-    
+
     # Menu déroulant Fichier
     ##      Bouton Fichier->Ouvrir
     def open_folder() :
@@ -36,8 +41,18 @@ class MainWindow(QMainWindow, UiMainWindow):
 
         # TODO : enregistrer le dossier dans les series
 
+        current_directory = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
+        Archive_r = open(str(script_directory+"/Data/Archive.txt"),"r")
+        lines = Archive_r.readlines()
+        Archive_r.close()
+        if not ((current_directory+"\n") in lines) :
+            Archive_a = open(str(script_directory+"/Data/Archive.txt"),"a")
+            Archive_a.write(current_directory+"\n")
+            Archive_a.close()
+        self.topWidget.setText(lines[-1])
+
         return
-    
+
     ##      Bouton Fichier->Exporter les statistiques
     def export_stats() :
         return
@@ -65,7 +80,7 @@ class MainWindow(QMainWindow, UiMainWindow):
     ##      Clique sur flèche droite
     def open_next_photo() :
         return
-    
+
     ##      Clique sur flèche gauche
     def open_previous_photo() :
         return
