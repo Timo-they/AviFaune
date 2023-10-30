@@ -13,6 +13,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
+
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1027, 712)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -107,7 +108,11 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuS_rie.menuAction())
         self.menubar.addAction(self.menuPhoto.menuAction())
 
+        self._createActions()
+        self._createMenuBar()
+        self._connectActions()
         self.retranslateUi(MainWindow)
+
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -126,3 +131,55 @@ class Ui_MainWindow(object):
         self.actionD_tection_automatique.setText(_translate("MainWindow", "Détection automatique"))
         self.actionEffacer_la_d_tection.setText(_translate("MainWindow", "Effacer la détection "))
         self.actionImporter_une_photo_suppl_mentaire.setText(_translate("MainWindow", "Importer une photo supplémentaire"))
+
+
+                        ## FONCTIONS UTILISÉES POUR ASSOCIER AUX BOUTONS/MENUS LEURS ACTIONS RESPECTIVES
+
+    def _createMenuBar(self) :
+        menuBar = self.menuBar()
+
+        menuFichier = menuBar.addMenu("Fichier")
+        menuFichier.addAction(self.open_folder)
+        menuFichier.addAction(self.export_stats)
+        menuFichier.addAction(self.close)
+
+        menuSerie = menuBar.addMenu("Série")
+        menuSerie.addAction(self.auto_detect)
+        menuSerie.addAction(self.suppr_detect)
+        menuSerie.addAction(selfphoto_suppl)
+
+        menuPhoto = menuBar.addMenu("Mode")
+        menuPhoto.addAction(self.serie)
+        menuPhoto.addAction(self.photo)
+
+
+    def _createActions(self) :
+        self.open_folder = QAction("Ouvrir un fichier",self)
+        self.export_stats = QAction("exporter les statistiques",self)
+        self.close = QAction("Close",self)
+
+        self.auto_detect = QAction("Détection automatique",self)
+        self.suppr_detect = QAction("Effacer la détection",self)
+        self.imp_photo_suppl = QAction("Importer une photo supplémentaire",self)
+
+        self.photo = QAction("Photo",self)
+        self.serie = QAction("Série",self)
+
+
+    def _connectActions(self) :
+            # Actions pour le menu Fichier
+        self.open_folder.triggered.connect(self.Open_folder)
+        self.export_stats.triggered.connect(self.Export_stats)
+        self.close.triggered.connect(self.Close)
+
+            # Actions pour le menu Série
+        self.auto_detect.triggered.connect(self.Auto_detect)
+        self.suppr_detect.triggered.connect(self.Suppr_detect)
+        self.imp_photo_suppl.triggered.connect(self.Imp_photo_suppl)
+
+            # Actions pour le menu Photo
+        self.photo.triggered.connect(self.Photo)
+
+            # Pour les boutons
+        self.prev_button.clicked.connect(self.open_previous_photo)
+        self.next_button.clicked.connect(self.open_next_photo)
