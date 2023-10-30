@@ -1,0 +1,3 @@
+
+C:/Users/ewenl/Documents/IMT Atlantique/2A/Projet commande entreprise/Code/Data
+C:/Users/ewenl/Documents/IMT Atlantique/2A/Projet commande entreprise/Code/__pycache__
