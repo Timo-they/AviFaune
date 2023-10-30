@@ -49,9 +49,8 @@ class MainWindow(QMainWindow, UiMainWindow):
             Archive_a = open(str(script_directory+"/Data/Archive.txt"),"a")
             Archive_a.write(current_directory+"\n")
             Archive_a.close()
-        self.topWidget.setText(lines[-1])
+        text_to_show = lines[-1]
 
-        return
 
     ##      Bouton Fichier->Exporter les statistiques
     def export_stats() :
