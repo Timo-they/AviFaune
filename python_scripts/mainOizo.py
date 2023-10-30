@@ -3,6 +3,8 @@ from PyQt5.QtWidgets import * # PyQt module for graphic components (controls, et
 from PyQt5.QtCore import * # PyQt core-module (threads, I/O, events,..)
 from PyQt5.QtGui import * # PyQt module for graphics OpenGL-based, fonts, etc...
 
+import sys
+
 from mainWindow import MainWindow
 
 C_INIT_FULL_SCREEN = 0 # full-screen GUI (0 : OFF, 1 : 0N)
