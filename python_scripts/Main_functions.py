@@ -13,16 +13,12 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog
 
-from tkinter import filedialog
-from tkinter import *
-
 # Menu déroulant Fichier
 ##      Bouton Fichier->Ouvrir
 ##  Imput :
 ##  Ouput : folder_path[str]
 def open_folder() :
-    filename =  filedialog.askdirectory()
-    return(root.filename)
+    return
 
 ##      Bouton Fichier->Exporter les statistiques
 def export_stats() :
