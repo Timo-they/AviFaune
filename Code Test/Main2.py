@@ -25,18 +25,22 @@ class Window(QMainWindow):
     def __init__(self, parent=None):
         """Initializer."""
         super().__init__(parent)
-        self.setWindowTitle("Fenêtre test_ui")
+        self.setWindowTitle("Fenêtre 'file view'")
 
         self.centralWidget = QtWidgets.QWidget()
         self.centralLayout = QtWidgets.QVBoxLayout()
 
             # Top layout
-        self.topLayout = QtWidgets.QVBoxLayout()
+        self.topLayout = QtWidgets.QHBoxLayout()
                 # Affichage des séries
         self.SeriesLayout = QtWidgets.QScrollArea()
-
         self.SeriesListWidget = QtWidgets.QWidget()
         self.SeriesListLayout = QtWidgets.QVBoxLayout()
+
+        self.SeriesLayout.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy(1))
+        self.SeriesLayout.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy(1))
+##        QAbstractScrollArea::setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff )
+##        QAbstractScrollArea::setVerticalScrollBarPolicy( Qt::ScrollBarAsNeeded)
 
         self.serie1 = QtWidgets.QPushButton()
         self.serie1.setText("Série 1")
@@ -73,12 +77,12 @@ class Window(QMainWindow):
                 # Affichage des images
         self.ImageWidget = QtWidgets.QWidget()
         self.ImageWidget.setStyleSheet("background-color:red;")
-        self.topLayout.addWidget(self.ImageWidget)
+        self.topLayout.addWidget(self.ImageWidget,5)
 
                 # Affichage des images
         self.StatsWidget = QtWidgets.QWidget()
         self.StatsWidget.setStyleSheet("background-color:blue;")
-        self.topLayout.addWidget(self.StatsWidget)
+        self.topLayout.addWidget(self.StatsWidget,1)
 
 
 
@@ -93,7 +97,7 @@ class Window(QMainWindow):
                 # Zone miniatures
         self.zoneMiniatures = QtWidgets.QWidget()
         self.zoneMiniatures.setStyleSheet("background-color:green;")
-        self.bottomLayout.addWidget(self.zoneMiniatures)
+        self.bottomLayout.addWidget(self.zoneMiniatures,5)
 
                 # Bouton suivant
         self.next_button = QtWidgets.QPushButton(self.centralWidget)
