@@ -25,6 +25,7 @@ class MainWindow(QMainWindow, UiMainWindow):
     series = {}
     id_serie = 0
     name_photo = ""
+    current_directory = ""
 
     def __init__(self):
        super(MainWindow, self).__init__()
@@ -33,7 +34,7 @@ class MainWindow(QMainWindow, UiMainWindow):
 
        self.setupUi(self)
 
-    # Menu déroulant Fichier
+                # Menu déroulant Fichier
     ##      Bouton Fichier->Ouvrir
     def open_folder() :
 
@@ -41,24 +42,36 @@ class MainWindow(QMainWindow, UiMainWindow):
 
         # TODO : enregistrer le dossier dans les series
 
-        current_directory = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
-        Archive_r = open(str(script_directory+"/Data/Archive.txt"),"r")
-        lines = Archive_r.readlines()
-        Archive_r.close()
-        if not ((current_directory+"\n") in lines) :
-            Archive_a = open(str(script_directory+"/Data/Archive.txt"),"a")
-            Archive_a.write(current_directory+"\n")
-            Archive_a.close()
-        text_to_show = lines[-1]
+        self.current_directory = str(QFileDialog.getExistingDirectory(self,"Select Directory"))
+##        Archive_r = open(str(script_directory+"/Data/Archive.txt"),"r")
+##        lines = Archive_r.readlines()
+##        Archive_r.close()
+##        if not ((current_directory+"\n") in lines) :
+##            Archive_a = open(str(script_directory+"/Data/Archive.txt"),"a")
+##            Archive_a.write(current_directory+"\n")
+##            Archive_a.close()
+##        text_to_show = lines[-1]
 
 
     ##      Bouton Fichier->Exporter les statistiques
     def export_stats() :
         return
 
-    # Menu déroulant Série
+    ##      Bouton Fichier->Fermer l'application
+    def close() :
+        return
+
+                # Menu déroulant Série
     ##      Bouton Série->Détection automatique des oiseaux
-    def detect_oizos() :
+    def auto_detect() :
+        return
+
+    ##      Bouton Série->Supprimer la détection actuelle
+    def suppr_detect() :
+        return
+
+    ##      Bouton Série->Ajouter photo supplémentaire à la série
+    def add_photo() :
         return
 
     # Tous les menus
