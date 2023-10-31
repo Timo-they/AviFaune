@@ -12,6 +12,8 @@
 from PyQt5.QtWidgets import * # PyQt module for graphic components (controls, etc...)
 
 from IHM import UiMainWindow
+from pathlib import Path
+
 
     # Pour pouvoir sauvegarder les données, j'utilise des .txt qu'il faut aller lire
     # J'utilise script_directory pour accéder au dossier
@@ -36,26 +38,12 @@ class MainWindow(QMainWindow, UiMainWindow):
 
                 # Menu déroulant Fichier
     ##      Bouton Fichier->Ouvrir
-    def open_folder() :
-
-        # TODO : ouvrir une fenetre de dialogue pour choisir un dossier à ouvrir
-
-        # TODO : enregistrer le dossier dans les series
-
-        self.current_directory = str(QFileDialog.getExistingDirectory(self,"Select Directory"))
-##        Archive_r = open(str(script_directory+"/Data/Archive.txt"),"r")
-##        lines = Archive_r.readlines()
-##        Archive_r.close()
-##        if not ((current_directory+"\n") in lines) :
-##            Archive_a = open(str(script_directory+"/Data/Archive.txt"),"a")
-##            Archive_a.write(current_directory+"\n")
-##            Archive_a.close()
-##        text_to_show = lines[-1]
-
+    def Open_folder() :
+        return
 
     ##      Bouton Fichier->Exporter les statistiques
     def export_stats() :
-        return
+        script_directory = "pomme"
 
     ##      Bouton Fichier->Fermer l'application
     def close() :
