@@ -128,7 +128,7 @@ class UiMainWindow(object):
 
     def _connectActions(self,MainWindow) :
             # Actions pour le menu Fichier
-        self.action_open_folder.triggered.connect(MainWindow.open_folder)
+        self.action_open_folder.triggered.connect(self.open_folder)
         self.action_export_stats.triggered.connect(MainWindow.export_stats)
         self.action_close.triggered.connect(MainWindow.close)
 
@@ -161,6 +161,14 @@ class UiMainWindow(object):
 ##        self.actionD_tection_automatique.setText(_translate("MainWindow", "Détection automatique"))
 ##        self.actionEffacer_la_d_tection.setText(_translate("MainWindow", "Effacer la détection "))
 ##        self.actionImporter_une_photo_suppl_mentaire.setText(_translate("MainWindow", "Importer une photo supplémentaire"))
+
+    def open_folder(self) :
+
+        file = str(QtWidgets.QFileDialog.getExistingDirectory(self, "Select Directory"))
+        self.label.setText("directory retrieved")
+
+##        dir_name = QtWidgets.QFileDialog.getExistingDirectory("Select a Directory")
+
 
             #### GUI Bindings pour Fichier
     def switch_to_file_menu():
