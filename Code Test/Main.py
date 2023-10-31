@@ -115,18 +115,22 @@ class Window(QMainWindow):
 
 
     def Open_folder(self) :
-        current_directory = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
-        Archive_r = open(str(script_directory+"/Data/Archive.txt"),"r")
-        lines = Archive_r.readlines()
-        Archive_r.close()
-        if not ((current_directory+"\n") in lines) :
-            Archive_a = open(str(script_directory+"/Data/Archive.txt"),"a")
-            Archive_a.write(current_directory+"\n")
-            Archive_a.close()
-        self.topWidget.setText(lines[-1])
+        dialog = QFileDialog(self)
+        dialog.setFileMode(QFileDialog.FileMode.ExistingFiles)
+        file = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
+        self.Label.setText(file)
+##        current_directory = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
+##        Archive_r = open(str(script_directory+"/Data/Archive.txt"),"r")
+##        lines = Archive_r.readlines()
+##        Archive_r.close()
+##        if not ((current_directory+"\n") in lines) :
+##            Archive_a = open(str(script_directory+"/Data/Archive.txt"),"a")
+##            Archive_a.write(current_directory+"\n")
+##            Archive_a.close()
+##        self.topWidget.setText(lines[-1])
 
     def Export_stats(self) :
-        self.topWidget.setText("on exporte les stats")
+        self.Label.setText("on exporte les stats")
 
     def Close(self) :
         self.centralWidget.setText("on ferme l'application")
