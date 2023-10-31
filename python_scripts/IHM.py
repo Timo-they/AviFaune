@@ -74,54 +74,102 @@ class UiMainWindow(object):
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
-        self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1027, 26))
+
+        self._retranslateUi(MainWindow)
+        self._createActions(MainWindow)
+        self._createMenuBar(MainWindow)
+        self._connectActions(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def _createMenuBar(self,MainWindow) :
+        self.menuBar = self.menuBar()
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 1027, 26))
+
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.menubar.sizePolicy().hasHeightForWidth())
-        self.menubar.setSizePolicy(sizePolicy)
-        self.menubar.setObjectName("menubar")
-        self.menuFichier = QtWidgets.QMenu(self.menubar)
-        self.menuFichier.setObjectName("menuFichier")
-        self.menuS_rie = QtWidgets.QMenu(self.menubar)
-        self.menuS_rie.setObjectName("menuS_rie")
-        self.menuPhoto = QtWidgets.QMenu(self.menubar)
-        self.menuPhoto.setObjectName("menuPhoto")
-        MainWindow.setMenuBar(self.menubar)
-        self.actionOuvrir_un_dossier = QtWidgets.QAction(MainWindow)
-        self.actionOuvrir_un_dossier.setObjectName("actionOuvrir_un_dossier")
-        self.actionExporter_statistiques = QtWidgets.QAction(MainWindow)
-        self.actionExporter_statistiques.setObjectName("actionExporter_statistiques")
-        self.actionClose = QtWidgets.QAction(MainWindow)
-        self.actionClose.setObjectName("actionClose")
-        self.actionD_tection_automatique = QtWidgets.QAction(MainWindow)
-        self.actionD_tection_automatique.setObjectName("actionD_tection_automatique")
-        self.actionEffacer_la_d_tection = QtWidgets.QAction(MainWindow)
-        self.actionEffacer_la_d_tection.setObjectName("actionEffacer_la_d_tection")
-        self.actionImporter_une_photo_suppl_mentaire = QtWidgets.QAction(MainWindow)
-        self.actionImporter_une_photo_suppl_mentaire.setObjectName("actionImporter_une_photo_suppl_mentaire")
-        self.menuFichier.addAction(self.actionOuvrir_un_dossier)
-        self.menuFichier.addAction(self.actionExporter_statistiques)
-        self.menuFichier.addAction(self.actionClose)
-        self.menuS_rie.addAction(self.actionD_tection_automatique)
-        self.menuS_rie.addAction(self.actionEffacer_la_d_tection)
-        self.menuS_rie.addAction(self.actionImporter_une_photo_suppl_mentaire)
-        self.menubar.addAction(self.menuFichier.menuAction())
-        self.menubar.addAction(self.menuS_rie.menuAction())
-        self.menubar.addAction(self.menuPhoto.menuAction())
+        sizePolicy.setHeightForWidth(self.menuBar.sizePolicy().hasHeightForWidth())
+        self.menuBar.setSizePolicy(sizePolicy)
 
-        self.retranslateUi(MainWindow)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+            # Menu Fichier
+        self.menuFichier = self.menuBar.addMenu("Fichier")
+        self.menuFichier.addAction(self.action_open_folder)
+        self.menuFichier.addAction(self.action_export_stats)
+        self.menuFichier.addAction(self.action_close)
 
-    #### GUI Bindings pour Fichier
+            # Menu Série
+        self.menuSerie = self.menuBar.addMenu("Série")
+        self.menuSerie.addAction(self.action_auto_detect)
+        self.menuSerie.addAction(self.action_suppr_detect)
+        self.menuSerie.addAction(self.action_add_photo)
+
+            # Menu mode
+        self.menuMode = self.menuBar.addMenu("Mode")
+                # Menu passage mode série
+        self.menuMode.addAction(self.action_mode_serie)
+                # Menu passage mode photo
+        self.menuMode.addAction(self.action_mode_photo)
+
+        MainWindow.setMenuBar(self.menuBar)
+
+
+    def _createActions(self, MainWindow) :
+        self.action_open_folder = QtWidgets.QAction("Ouvrir un fichier",MainWindow)
+        self.action_export_stats = QtWidgets.QAction("exporter les statistiques",MainWindow)
+        self.action_close = QtWidgets.QAction("Close",MainWindow)
+
+        self.action_auto_detect = QtWidgets.QAction("Détection automatique",MainWindow)
+        self.action_suppr_detect = QtWidgets.QAction("Effacer la détection",MainWindow)
+        self.action_add_photo = QtWidgets.QAction("Importer une photo supplémentaire",MainWindow)
+
+        self.action_mode_serie = QtWidgets.QAction("Passage mode série",MainWindow)
+        self.action_mode_photo = QtWidgets.QAction("Passage mode photo",MainWindow)
+
+
+    def _connectActions(self,MainWindow) :
+            # Actions pour le menu Fichier
+        self.action_open_folder.triggered.connect(MainWindow.open_folder)
+        self.action_export_stats.triggered.connect(MainWindow.export_stats)
+        self.action_close.triggered.connect(MainWindow.close)
+
+            # Actions pour le menu Série
+        self.action_auto_detect.triggered.connect(MainWindow.auto_detect)
+        self.action_suppr_detect.triggered.connect(MainWindow.suppr_detect)
+        self.action_add_photo.triggered.connect(MainWindow.add_photo)
+
+            # Actions pour le menu Photo
+        self.action_mode_serie.triggered.connect(MainWindow.switch_to_serie_menu)
+        self.action_mode_photo.triggered.connect(MainWindow.switch_to_photo_menu)
+
+            # Pour les boutons
+##        self.action_prev_button.clicked.connect(MainWindow.open_previous_photo)
+##        self.action_next_button.clicked.connect(MainWindow.open_next_photo)
+
+    def _retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        self.pushButton.setText(_translate("MainWindow", "Série 1"))
+        self.pushButton_2.setText(_translate("MainWindow", "Série 2"))
+        self.pushButton_3.setText(_translate("MainWindow", "Série 3"))
+        self.label.setText(_translate("MainWindow", "Satistiques"))
+##        self.menuFichier.setTitle(_translate("MainWindow", "Fichier"))
+##        self.menuSerie.setTitle(_translate("MainWindow", "Série"))
+##        self.menuPhoto.setTitle(_translate("MainWindow", "Photo"))
+##        self.actionOuvrir_un_dossier.setText(_translate("MainWindow", "Ouvrir un dossier"))
+##        self.actionExporter_statistiques.setText(_translate("MainWindow", "Exporter statistiques "))
+##        self.actionClose.setText(_translate("MainWindow", "Close"))
+##        self.actionD_tection_automatique.setText(_translate("MainWindow", "Détection automatique"))
+##        self.actionEffacer_la_d_tection.setText(_translate("MainWindow", "Effacer la détection "))
+##        self.actionImporter_une_photo_suppl_mentaire.setText(_translate("MainWindow", "Importer une photo supplémentaire"))
+
+            #### GUI Bindings pour Fichier
     def switch_to_file_menu():
         return
 
     def update_file_menu(series: dict):
         return
 
-    #### GUI Bindings pour Série
+            #### GUI Bindings pour Série
     def switch_to_serie_menu():
         return
 
@@ -134,7 +182,7 @@ class UiMainWindow(object):
     def refresh_photos_from_serie(id_serie: int, series: dict):
         return
 
-    #### GUI Bindings pour Photo
+            #### GUI Bindings pour Photo
     def switch_to_photo_menu():
         return
 
@@ -143,22 +191,3 @@ class UiMainWindow(object):
 
     def show_photo(name_photo: str, id_serie: int, series: dict):
         return
-
-
-
-    def retranslateUi(self, MainWindow):
-        _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.pushButton.setText(_translate("MainWindow", "Série 1"))
-        self.pushButton_2.setText(_translate("MainWindow", "Série 2"))
-        self.pushButton_3.setText(_translate("MainWindow", "Série 3"))
-        self.label.setText(_translate("MainWindow", "Satistiques"))
-        self.menuFichier.setTitle(_translate("MainWindow", "Fichier"))
-        self.menuS_rie.setTitle(_translate("MainWindow", "Série"))
-        self.menuPhoto.setTitle(_translate("MainWindow", "Photo"))
-        self.actionOuvrir_un_dossier.setText(_translate("MainWindow", "Ouvrir un dossier"))
-        self.actionExporter_statistiques.setText(_translate("MainWindow", "Exporter statistiques "))
-        self.actionClose.setText(_translate("MainWindow", "Close"))
-        self.actionD_tection_automatique.setText(_translate("MainWindow", "Détection automatique"))
-        self.actionEffacer_la_d_tection.setText(_translate("MainWindow", "Effacer la détection "))
-        self.actionImporter_une_photo_suppl_mentaire.setText(_translate("MainWindow", "Importer une photo supplémentaire"))
