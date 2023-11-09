@@ -32,7 +32,7 @@ class MainWindow(QMainWindow, UiMainWindow):
     def __init__(self):
        super(MainWindow, self).__init__()
 
-        # TODO : load applciation data
+        # TODO : load application data
 
        self.setupUi(self)
 
