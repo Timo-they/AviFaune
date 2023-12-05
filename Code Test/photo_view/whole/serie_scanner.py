@@ -1,10 +1,10 @@
 
 
-from datas import *
+import datas
+import os
 
-
-def app_scan_serie():
-    path_to_scan = app_get_current_serie_path()
+def scan_serie():
+    path_to_scan = datas.get_current_serie_path()
 
     # TODO
     new_photos = {}
@@ -20,8 +20,8 @@ def app_scan_serie():
         
                 id = str(int(id)+1)
 
-    app_set_photos(new_photos)
+    datas.set_photos(new_photos)
 
-    for name in app_get_stats_serie():
+    for name in datas.get_stats_serie():
         pass
 

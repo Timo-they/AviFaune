@@ -3,14 +3,12 @@
 import os
 from functools import partial
 
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QFrame, QPushButton
+from PyQt5.QtCore import Qt
 
-from datas import *
-from serie_scanner import *
+import datas
 
-from top_layout.serie_view.scroll_area_serie import *
+from top_layout.serie_view.scroll_area_serie import ScrollAreaSerie
 
 
 class SerieView(QWidget):
@@ -19,25 +17,19 @@ class SerieView(QWidget):
 
     def __init__(self, parent = None):
         super().__init__(parent)
-        app_set_widget("serie_view", self)
+        datas.set_widget("serie_view", self)
+
+        self.setMinimumWidth(100)
 
         self.build_serie_view()
 
     def build_serie_view(self):
         view_box = QVBoxLayout(self)
         view_box.setContentsMargins(0, 0, 0, 0)
-
-        # id = QFontDatabase.addApplicationFont("roboto/Roboto-BoldItalic.ttf")
-        # if id < 0: print(" /!\ Error, cannot read : roboto/Roboto-BoldItalic.ttf /!\ ")
-
-        # families = QFontDatabase.applicationFontFamilies(id)
-        # print(families[0])
         
         label = QLabel("Séries")
         label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         view_box.addWidget(label)
-
-        # label.setFont(QFont(families[0], 80))
 
         separator = QFrame()
         separator.setFrameShape(QFrame.HLine)
@@ -61,13 +53,13 @@ class SerieView(QWidget):
         for child in children:
             child.deleteLater()
         
-        for id, path in app_get_series().items():
+        for id, path in datas.get_series().items():
             button = QPushButton(os.path.basename(os.path.dirname(path)))
             button.setToolTip(path)
             button.setObjectName("serie-button")
             button.clicked.connect(partial(self.open_serie, id))
 
-            if id == app_get_current_serie():
+            if id == datas.get_current_serie():
                 button.setDisabled(True)
 
             self.series_list_box.addWidget(button)
@@ -77,6 +69,4 @@ class SerieView(QWidget):
     
     def open_serie(self, id: str):
         print("Opening serie ", id)
-        app_set_current_serie(id)
-        app_scan_serie()
-        print("Opened serie ", app_get_current_serie_name())
+        datas.set_current_serie(id)

@@ -1,10 +1,10 @@
 
 
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt5.QtGui import QShowEvent, QHideEvent
+from PyQt5.QtWidgets import QScrollArea, QWidget, QFrame, QSizePolicy
+from PyQt5.QtCore import Qt, QObject, QEvent
 
-from datas import *
+import datas
 
 
 class ScrollAreaBottom(QScrollArea):
@@ -18,6 +18,8 @@ class ScrollAreaBottom(QScrollArea):
         self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.verticalScrollBar().setEnabled(False)
         self.setFrameStyle(QFrame.NoFrame)
+
+        self.horizontalScrollBar().installEventFilter(self)
         
         self.widget = QWidget()
         self.widget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
@@ -27,18 +29,18 @@ class ScrollAreaBottom(QScrollArea):
         self.widget.setObjectName("panel-color")
     
     def eventFilter(self, object: QObject, event: QEvent) -> bool:
-        # if object == self.widget and event.type() == QEvent.Resize:
-        #     print("Setting the size to ", self.width())
-        #     if self.verticalScrollBar().isVisible():
-        #         self.widget.setFixedWidth(self.width() - 8)
-        #     else:
-        #         self.widget.setFixedWidth(self.width())
-        if object == self and event.type() == QEvent.Resize:
-            #print("Setting the size to ", self.width())
-            if self.horizontalScrollBar().isVisible():
-                self.widget.setFixedHeight(self.height() - 8)
-            else:
-                self.widget.setFixedHeight(self.height())
+        # if object == self.horizontalScrollBar() and (event.type() == QEvent.Show or event.type() == QEvent.Hide):
+        #     print("YOOOOOOOOOO", event)
+        #     self.resize()
 
+        if object == self and event.type() == QEvent.Resize:
+            self.resize()
+        
         return False
+
+    def resize(self):
+        if self.horizontalScrollBar().isVisible():
+            self.widget.setFixedHeight(self.height() - 8)
+        else:
+            self.widget.setFixedHeight(self.height())
         

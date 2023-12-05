@@ -2,21 +2,22 @@
 
 import sys
 
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt5.QtWidgets import QApplication
 
-from datas import *
-from datas_loader_saver import *
+import datas
+import whole.datas_loader_saver as datas_loader_saver
 
-from window import OizoWindow
+from whole.window import OizoWindow
 
 
 if __name__ == "__main__":
-    print(" - - - - - Start of Oizooo App - - - - - ")
+    print()
+    print(datas.COLOR_GREEN, " - - - - - Start of Oizooo App - - - - - ", datas.COLOR_RESET)
+    print()
+
     app = QApplication(sys.argv)
 
-    print("First got widgets : ", widgets_)
+    print(datas.COLOR_BRIGHT_BLUE, "First got widgets : ", datas.widgets_, datas.COLOR_RESET)
     print()
 
     win = OizoWindow()
@@ -25,25 +26,14 @@ if __name__ == "__main__":
     qss_path = "style.qss"
     with open(qss_path, "r") as file:
         app.setStyleSheet(file.read())
-
-
-    #app.setStyle("Fusion")
-
-    # Custom brown palette.
-    # palette = QPalette()
-    # palette.setColor(QPalette.Window, QColor(188,170,164))
-    # palette.setColor(QPalette.WindowText, QColor(121,85,72))
-    # palette.setColor(QPalette.ButtonText, QColor(121,85,72))
-    # palette.setColor(QPalette.Text, QColor(121,85,72))
-    # palette.setColor(QPalette.Base, QColor(188,170,164))
-    # palette.setColor(QPalette.AlternateBase, QColor(188,170,164))
-    # app.setPalette(palette)
     
-    app_load_datas()
+    datas_loader_saver.load_datas()
 
     print()
-    print("Finally got widgets : ", widgets_)
+    print(datas.COLOR_BRIGHT_BLUE, "Finally got widgets : ", datas.widgets_, datas.COLOR_RESET)
 
     error = app.exec_()
-    print(" - - - - - End of Oizooo App - - - - - ")
+    print()
+    print(datas.COLOR_GREEN, " - - - - - End of Oizooo App - - - - - ", datas.COLOR_RESET)
+    print()
     sys.exit(error)

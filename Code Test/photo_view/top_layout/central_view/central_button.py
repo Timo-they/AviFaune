@@ -1,11 +1,11 @@
 
 
 
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtWidgets import QToolButton, QSizePolicy
+from PyQt5.QtCore import QSize, QObject, QEvent, Qt
 
-from datas import *
+import datas
 
 
 class CentralButton(QToolButton):
@@ -15,7 +15,6 @@ class CentralButton(QToolButton):
         
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         self.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
-        #print("Adding button with icon ", app_get_current_serie_path() + path)
 
         icon = QIcon(photo_pixmap_scaled)
 
@@ -29,16 +28,13 @@ class CentralButton(QToolButton):
 
 
     def eventFilter(self, object: QObject, event: QEvent) -> bool:
-            # if object == self.widget and event.type() == QEvent.Resize:
-            #     print("Setting the size to ", self.width())
-            #     if self.verticalScrollBar().isVisible():
-            #         self.widget.setFixedWidth(self.width() - 8)
-            #     else:
-            #         self.widget.setFixedWidth(self.width())
-            if object == self and event.type() == QEvent.Resize:
-                #print("Setting the size to ", self.width())
-                height = self.width() + 23
-                self.setFixedHeight(height)
-                self.setIconSize(QSize(height-17, height-17))
+        if object == self and event.type() == QEvent.Resize:
+            height = self.width() + 23
+            self.setFixedHeight(height)
+            self.setIconSize(QSize(height-17, height-17))
 
-            return False
+        return False
+
+    def set_thumbnail(self, pixmap: QPixmap):
+        icon = QIcon(pixmap)
+        self.setIcon(icon)

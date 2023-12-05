@@ -1,11 +1,9 @@
 
 
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel
+from PyQt5.QtCore import Qt
 
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-
-from datas import *
+import datas
 
 
 class StatView(QWidget):
@@ -15,6 +13,8 @@ class StatView(QWidget):
     def __init__(self, parent = None):
         super().__init__(parent)
         self.setObjectName("panel-color")
+
+        self.setMinimumWidth(100)
 
         self.build_stat_view()
 

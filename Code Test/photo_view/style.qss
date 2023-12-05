@@ -63,13 +63,17 @@ QPushButton#serie-button {
 }
 
 QPushButton:hover, QToolButton:hover {
-    background-color: #206db9;
+    background-color: #2278ce;
 }
 QPushButton:pressed, QToolButton:pressed {
     background-color: #23517f;
 }
-QPushButton:disabled {
+QPushButton:disabled, QToolButton:disabled {
     background-color: #318de9;
+    margin: 0px;
+}
+QToolButton:disabled#navigation_button {
+    background-color: #13304d;
     margin: 0px;
 }
 

@@ -1,46 +1,36 @@
 
 
+from functools import partial
 
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt5.QtGui import QPalette, QColor, QPixmap
+from PyQt5.QtWidgets import QVBoxLayout, QWidget, QLabel, QFrame, QGridLayout
+from PyQt5.QtCore import pyqtSlot, QRunnable, QRect, Qt
 
-from datas import *
-from top_layout.central_view.scroll_area_central import *
-from top_layout.central_view.central_button import *
+import datas
 
-
-class Worker(QRunnable):
-
-    def __init__(self, fn, *args, **kwargs):
-        super(Worker, self).__init__()
-        # Store constructor arguments (re-used for processing)
-        self.fn = fn
-        self.args = args
-        self.kwargs = kwargs
-
-    @pyqtSlot()
-    def run(self):
-        self.fn(*self.args, **self.kwargs)
+from top_layout.central_view.scroll_area_central import ScrollAreaCentral
+from top_layout.central_view.central_button import CentralButton
+from top_layout.central_view.thumbnail_loader import ThumbnailLoader
 
 class CentralView(QWidget):
 
     view_box: QVBoxLayout
     title_label: QLabel
-    # thumbnails_to_load: list
+
+    thumbnail_buttons: dict
 
     def __init__(self, parent = None):
         super().__init__(parent)
-        # self.threadpool = QThreadPool()
 
-        palette = QPalette();
+        self.thumbnail_buttons = {}
 
-        palette.setColor(QPalette.Window, QColor("#303446"));
+        palette = QPalette()
+        palette.setColor(QPalette.Window, QColor("#303446"))
 
         self.setAutoFillBackground(True); 
         self.setPalette(palette)
 
-        app_set_widget("central_view", self)
+        datas.set_widget("central_view", self)
 
         self.build_central_view()
 
@@ -49,7 +39,6 @@ class CentralView(QWidget):
 
         self.title_label = QLabel("Aucune série sélectionnée")
         self.view_box.addWidget(self.title_label)
-        print(self)
 
         separator = QFrame()
         separator.setFrameShape(QFrame.HLine)
@@ -69,12 +58,6 @@ class CentralView(QWidget):
         intermediate_vbox.addWidget(QWidget())
     
     def update(self):
-        if app_get_current_serie() == "":
-            self.title_label.setText("Aucune série sélectionnée")
-            return
-
-        self.title_label.setText(app_get_current_serie_path())
-        
         children = []
         for i in range(self.central_grid.count()):
             child = self.central_grid.itemAt(i).widget()
@@ -82,8 +65,30 @@ class CentralView(QWidget):
                 children.append(child)
         for child in children:
             child.deleteLater()
+        
+        self.thumbnail_buttons = {}
 
-        photo_pixmap = QPixmap("placeholder-square.jpg")
+        if datas.get_current_serie() == "":
+            self.title_label.setText("Aucune série sélectionnée")
+            return
+
+        self.title_label.setText(datas.get_current_serie_path() + " (" + str(len(datas.get_photos())) + " photos)")
+
+        placeholder_pixmap = self.load_placeholder()
+        
+        i = 0
+        for id, path in datas.get_photos().items():
+            button = CentralButton(id, path, placeholder_pixmap)
+            button.clicked.connect(partial(self.open_photo, id))
+
+            self.central_grid.addWidget(button, i//5,i%5)
+            self.thumbnail_buttons[id] = button
+            i += 1
+        
+        # TODO : load thumbnails in a different thread
+    
+    def load_placeholder(self) -> QPixmap:
+        photo_pixmap = QPixmap("icons/placeholder-square.jpg")
 
         #On rend d'abord la photo en temps que carré 1024x1024px (ici, on ne fait que la réduire en taille pour que son plus petit coté fasse 1024px)
         photo_pixmap_overscaled = photo_pixmap.scaled(1024, 1024, aspectRatioMode=Qt.KeepAspectRatioByExpanding)
@@ -91,56 +96,18 @@ class CentralView(QWidget):
         #On centre le carré sur l'image, car c'est souvent au centre de la photo ce qui est intéressant
         aleft = (photo_pixmap_overscaled.width() - 1024) // 2
         atop = (photo_pixmap_overscaled.height() - 1024) // 2
-        photo_pixmap_overscaled_cropped = photo_pixmap_overscaled.copy(QRect(aleft, atop, 1024, 1024));
+        photo_pixmap_overscaled_cropped = photo_pixmap_overscaled.copy(QRect(aleft, atop, 1024, 1024))
 
         #Ensuite on la réduit de taille d'un facteur 4 avec un smooth, qui permet d'avoir un joli rendu
-        placeholder_pixmap_scaled = photo_pixmap_overscaled_cropped.scaled(256, 256, transformMode=Qt.SmoothTransformation)
+        return photo_pixmap_overscaled_cropped.scaled(256, 256, transformMode=Qt.SmoothTransformation)
 
-        i = 0
-        for id, path in app_get_photos().items():
-            photo_pixmap: QPixmap = QPixmap(app_get_current_serie_path() + path)
-
-            if photo_pixmap.isNull():
-                photo_pixmap_scaled = placeholder_pixmap_scaled
-            else:
-                #On rend d'abord la photo en temps que carré 1024x1024px (ici, on ne fait que la réduire en taille pour que son plus petit coté fasse 1024px)
-                photo_pixmap_overscaled = photo_pixmap.scaled(1024, 1024, aspectRatioMode=Qt.KeepAspectRatioByExpanding)
-
-                #On centre le carré sur l'image, car c'est souvent au centre de la photo ce qui est intéressant
-                aleft = (photo_pixmap_overscaled.width() - 1024) // 2
-                atop = (photo_pixmap_overscaled.height() - 1024) // 2
-                photo_pixmap_overscaled_cropped = photo_pixmap_overscaled.copy(QRect(aleft, atop, 1024, 1024));
-
-                #Ensuite on la réduit de taille d'un facteur 4 avec un smooth, qui permet d'avoir un joli rendu
-                photo_pixmap_scaled = photo_pixmap_overscaled_cropped.scaled(256, 256, transformMode=Qt.SmoothTransformation)
-            button = CentralButton(id, path, photo_pixmap_scaled)
-            #self.thumbnails_to_load.append((app_get_current_serie_path() + path, button))
-
-            self.central_grid.addWidget(button, i//5,i%5)
-            i += 1
-        
-        # worker = Worker(self.load_thumbnails)
-        # self.threadpool.start(worker)
+    def open_photo(self, id: str):
+        print("Opening photo ", id)
+        datas.set_current_photo(id)
     
-    # def load_thumbnails(self):
-    #     if len(self.thumbnails_to_load) > 0:
-    #         path, button = self.thumbnails_to_load.pop()
+    def set_thumbnail_photo(self, pixmap: QPixmap, id: str, id_serie: str):
+        button = self.thumbnail_buttons.get(id)
 
-    #         photo_pixmap = QPixmap(path)
-
-    #         #On rend d'abord la photo en temps que carré 1024x1024px (ici, on ne fait que la réduire en taille pour que son plus petit coté fasse 1024px)
-    #         photo_pixmap_overscaled = photo_pixmap.scaled(1024, 1024, aspectRatioMode=Qt.KeepAspectRatioByExpanding)
-
-    #         #On centre le carré sur l'image, car c'est souvent au centre de la photo ce qui est intéressant
-    #         aleft = (photo_pixmap_overscaled.width() - 1024) // 2
-    #         atop = (photo_pixmap_overscaled.height() - 1024) // 2
-    #         photo_pixmap_overscaled_cropped = photo_pixmap_overscaled.copy(QRect(aleft, atop, 1024, 1024));
-
-    #         #Ensuite on la réduit de taille d'un facteur 4 avec un smooth, qui permet d'avoir un joli rendu
-    #         photo_pixmap_scaled = photo_pixmap_overscaled_cropped.scaled(256, 256, transformMode=Qt.SmoothTransformation)
-            
-    #         icon = QIcon(photo_pixmap_scaled)
-    #         button.setIcon(icon)
-
-    #         return self.load_thumbnails()
-
+        if button and datas.get_current_serie() == id_serie:
+            button.set_thumbnail(pixmap)
+    

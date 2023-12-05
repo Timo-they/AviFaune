@@ -1,10 +1,9 @@
 
 
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt5.QtWidgets import QScrollArea, QWidget, QFrame, QSizePolicy
+from PyQt5.QtCore import QEvent, QObject, Qt
 
-from datas import *
+import datas
 
 
 class ScrollAreaSerie(QScrollArea):
@@ -27,14 +26,7 @@ class ScrollAreaSerie(QScrollArea):
         self.widget.setObjectName("panel-color")
     
     def eventFilter(self, object: QObject, event: QEvent) -> bool:
-        # if object == self.widget and event.type() == QEvent.Resize:
-        #     print("Setting the size to ", self.width())
-        #     if self.verticalScrollBar().isVisible():
-        #         self.widget.setFixedWidth(self.width() - 8)
-        #     else:
-        #         self.widget.setFixedWidth(self.width())
         if object == self and event.type() == QEvent.Resize:
-            #print("Setting the size to ", self.width())
             if self.verticalScrollBar().isVisible():
                 self.widget.setFixedWidth(self.width() - 8)
             else:

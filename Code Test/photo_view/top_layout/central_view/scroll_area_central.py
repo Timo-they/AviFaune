@@ -1,10 +1,9 @@
 
 
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt5.QtWidgets import QScrollArea, QWidget, QFrame, QSizePolicy
+from PyQt5.QtCore import QObject, Qt, QEvent
 
-from datas import *
+import datas
 
 
 class ScrollAreaCentral(QScrollArea):
