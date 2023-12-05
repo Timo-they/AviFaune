@@ -14,7 +14,8 @@ class StatView(QWidget):
         super().__init__(parent)
         self.setObjectName("panel-color")
 
-        self.setMinimumWidth(100)
+        self.setMinimumWidth(120)
+        self.setMaximumWidth(300)
 
         self.build_stat_view()
 

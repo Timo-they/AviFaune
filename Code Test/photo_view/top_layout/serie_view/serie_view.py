@@ -19,7 +19,8 @@ class SerieView(QWidget):
         super().__init__(parent)
         datas.set_widget("serie_view", self)
 
-        self.setMinimumWidth(100)
+        self.setMinimumWidth(120)
+        self.setMaximumWidth(250)
 
         self.build_serie_view()
 

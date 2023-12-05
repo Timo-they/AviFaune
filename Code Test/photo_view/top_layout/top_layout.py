@@ -30,7 +30,7 @@ class TopLayout(QHBoxLayout):
         self.central_view_photo = CentralViewPhoto()
 
         self.addWidget(self.serie_view, 1)
-        self.addWidget(self.central_view, 5)
+        self.addWidget(self.central_view, 4)
         self.addWidget(self.stat_view, 1)
 
     def update(self):

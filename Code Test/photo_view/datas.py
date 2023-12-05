@@ -51,13 +51,11 @@ def get_series():
     return series_
 
 def set_series(new_series: dict):
-    print(COLOR_BRIGHT_MAGENTA, "Data setting series from ", get_current_serie(), " to ", new_series, COLOR_RESET)
+    print(COLOR_BLACK, "Data setting series from ", get_current_serie(), " to ", new_series, COLOR_RESET)
     global series_
     series_ = new_series
 
     get_widget("serie_view").update()
-    get_widget("central_view").update()
-    get_widget("bottom_layout").update()
     get_widget("menu_bar_handler").update()
 
     datas_loader_saver.save_datas()
@@ -70,16 +68,10 @@ def add_serie(path: str):
         if int(id) > max_id:
             max_id = int(id)
 
-    series_[max_id+1] = path
-
     print(COLOR_BRIGHT_MAGENTA, "Data adding serie ", path, " as ", max_id+1, COLOR_RESET)
 
-    get_widget("serie_view").update()
-    get_widget("central_view").update()
-    get_widget("bottom_layout").update()
-    get_widget("menu_bar_handler").update()
-
-    datas_loader_saver.save_datas()
+    series_[str(max_id+1)] = path
+    set_current_serie(str(max_id+1))
 
 def remove_serie(id: str):
     global datas_loader_saver
@@ -90,8 +82,6 @@ def remove_serie(id: str):
     
     series_.pop(id)
     get_widget("serie_view").update()
-    get_widget("central_view").update()
-    get_widget("bottom_layout").update()
     get_widget("menu_bar_handler").update()
 
     datas_loader_saver.save_datas()
@@ -111,7 +101,7 @@ def get_current_serie_path():
     return series_[current_serie_]
 
 def set_current_serie(new_serie: str):
-    print(COLOR_BRIGHT_MAGENTA, "Data setting series from ", get_current_serie(), " to ", new_serie, COLOR_RESET)
+    print(COLOR_BRIGHT_MAGENTA, "Data setting serie from ", get_current_serie(), " to ", new_serie, COLOR_RESET)
     global current_serie_, datas_loader_saver
     current_serie_ = new_serie
 
@@ -126,8 +116,6 @@ def set_current_serie(new_serie: str):
     get_widget("bottom_layout").update_selected_serie()
     get_widget("menu_bar_handler").update()
 
-    datas_loader_saver.save_datas()
-
 
 # PHOTOS
 global photos_
@@ -138,12 +126,9 @@ def get_photos():
     return photos_
 
 def set_photos(new_photos: dict):
-    print(COLOR_BRIGHT_MAGENTA, "Data setting photos from ", get_photos(), " to ", new_photos, COLOR_RESET)
+    print(COLOR_BLACK, "Data setting photos from ", get_photos(), " to ", new_photos, COLOR_RESET)
     global photos_
     photos_ = new_photos
-
-    get_widget("central_view").update()
-    get_widget("bottom_layout").update()
 
 # CURRENT PHOTO
 global current_photo_
@@ -161,7 +146,7 @@ def get_current_photo_full_path():
 
 def set_current_photo(new_photo: str):
     last_photo = get_current_photo()
-    print(COLOR_BRIGHT_MAGENTA, "Data setting photos from ", last_photo, " to ", new_photo, COLOR_RESET)
+    print(COLOR_BRIGHT_MAGENTA, "Data setting photo from ", last_photo, " to ", new_photo, COLOR_RESET)
     global current_photo_
     current_photo_ = new_photo
 
@@ -194,6 +179,7 @@ def get_stats_serie():
 
 
 def set_stats(new_stats: dict):
+    print(COLOR_BLACK, "Data setting photos from ", get_stats(), " to ", new_stats, COLOR_RESET)
     global stats_
     stats_ = new_stats
 

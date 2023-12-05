@@ -14,11 +14,11 @@ def load_datas():
 
             if datas_["series"] != None:
                 datas.set_series(datas_["series"])
-                print(datas.COLOR_BRIGHT_BLUE, "Has serie : ", datas.get_series(), datas.COLOR_RESET)
+                print(datas.COLOR_BLACK, "Loaded series : ", datas.get_series(), datas.COLOR_RESET)
             
             if datas_["stats"] != None:
                 datas.set_stats(datas_["stats"])
-                print(datas.COLOR_BRIGHT_BLUE, "Has serie : ", datas.get_stats(), datas.COLOR_RESET)
+                print(datas.COLOR_BLACK, "Loaded stats : ", datas.get_stats(), datas.COLOR_RESET)
 
 
 def save_datas():

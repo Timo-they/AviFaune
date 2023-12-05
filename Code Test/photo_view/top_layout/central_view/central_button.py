@@ -19,7 +19,7 @@ class CentralButton(QToolButton):
         icon = QIcon(photo_pixmap_scaled)
 
         self.setIcon(icon)
-        self.setIconSize(QSize(256, 256))
+        self.setIconSize(QSize(512, 512))
 
         self.setText(path)
         self.setToolTip(path)
@@ -35,6 +35,6 @@ class CentralButton(QToolButton):
 
         return False
 
-    def set_thumbnail(self, pixmap: QPixmap):
-        icon = QIcon(pixmap)
-        self.setIcon(icon)
+    # def set_thumbnail(self, pixmap: QPixmap):
+    #     icon = QIcon(pixmap)
+    #     self.setIcon(icon)

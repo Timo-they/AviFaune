@@ -2,9 +2,9 @@
 
 from functools import partial
 
-from PyQt5.QtGui import QPalette, QColor, QPixmap
+from PyQt5.QtGui import QPalette, QColor, QPixmap, QIcon
 from PyQt5.QtWidgets import QVBoxLayout, QWidget, QLabel, QFrame, QGridLayout
-from PyQt5.QtCore import pyqtSlot, QRunnable, QRect, Qt
+from PyQt5.QtCore import QThread, QRect, Qt, QThreadPool
 
 import datas
 
@@ -19,10 +19,14 @@ class CentralView(QWidget):
 
     thumbnail_buttons: dict
 
+    thumnbnail_loader: ThumbnailLoader
+    threadpool: QThreadPool
+
     def __init__(self, parent = None):
         super().__init__(parent)
 
         self.thumbnail_buttons = {}
+        self.threadpool = QThreadPool()
 
         palette = QPalette()
         palette.setColor(QPalette.Window, QColor("#303446"))
@@ -85,7 +89,31 @@ class CentralView(QWidget):
             self.thumbnail_buttons[id] = button
             i += 1
         
-        # TODO : load thumbnails in a different thread
+        print("Multithreading with maximum %d threads" %  QThreadPool.globalInstance().maxThreadCount())
+        if QThreadPool.globalInstance().activeThreadCount() > 0:
+            print(datas.COLOR_BRIGHT_RED, "Le thread de miniatures est encore en cours... On attend qu'ca finisse")
+            QThreadPool.globalInstance().waitForDone()
+
+
+        self.thumbnail_loader = ThumbnailLoader(placeholder_pixmap)
+        QThreadPool.globalInstance().start(self.thumbnail_loader)
+
+        # if self.thumnbnail_loader_thread.isRunning():
+        #     print(datas.COLOR_BRIGHT_RED, "The thred has not finished yet, waiting for it", datas.COLOR_RESET)
+        #     self.thumnbnail_loader_thread.wait()
+        
+        # self.thumnbnail_loader = ThumbnailLoader(placeholder_pixmap)
+
+        # self.thumnbnail_loader_thread = QThread()
+        # self.thumnbnail_loader.moveToThread(self.thumnbnail_loader_thread)
+        # self.thumnbnail_loader_thread.started.connect(self.thumnbnail_loader.load_thumbnails)
+        # self.thumnbnail_loader.finished.connect(self.thumnbnail_loader_thread.quit)
+        # self.thumnbnail_loader.finished.connect(self.thumnbnail_loader.deleteLater)
+        # self.thumnbnail_loader_thread.finished.connect(self.thumnbnail_loader_thread.deleteLater)
+
+        # self.thumnbnail_loader_thread.start()
+        # print(datas.COLOR_BRIGHT_YELLOW, "end", datas.COLOR_RESET)
+
     
     def load_placeholder(self) -> QPixmap:
         photo_pixmap = QPixmap("icons/placeholder-square.jpg")
@@ -105,9 +133,9 @@ class CentralView(QWidget):
         print("Opening photo ", id)
         datas.set_current_photo(id)
     
-    def set_thumbnail_photo(self, pixmap: QPixmap, id: str, id_serie: str):
+    def set_thumbnail_photo(self, icon: QIcon, id: str, id_serie: str):
         button = self.thumbnail_buttons.get(id)
 
         if button and datas.get_current_serie() == id_serie:
-            button.set_thumbnail(pixmap)
+            button.setIcon(icon)#_thumbnail(pixmap)
     
