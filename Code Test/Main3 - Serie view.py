@@ -64,57 +64,28 @@ class Window(QMainWindow):
         self.ImageVLayout.addWidget(self.SerieName)
                     # Affichage de toutes les miniatures
         self.ImageScroll = QtWidgets.QScrollArea()
+        self.ImageScroll.setWidgetResizable(True)
         self.ImageGlayout = QtWidgets.QGridLayout()
         self.ImageGWidget = QtWidgets.QWidget()
 
-        """
-        path2pictures = 'C:\\Users\\ewenl\\Documents\\IMT Atlantique\\2A\\Projet commande entreprise\\Code\\Surf'
-        listPictures = listdir(path2pictures)
-        miniatures_label ={}
-        miniatures_pixmap = {}
-        for i in range(len(listPictures)) :
-            miniatures_label[i] = QtWidgets.QLabel()
-            miniatures_pixmap[i] = QtGui.QPixmap(path2pictures+'\\'+listPictures[i])
-##            miniatures_pixmap[i] = QtGui.QPixmap('C:\\Users\\ewenl\\Documents\\IMT Atlantique\\2A\\Projet commande entreprise\\Code\\Surf\\23-09-21 - 12h07 - PoulpyCup-Surf - 001.jpg')
-            miniatures_pixmap[i] = miniatures_pixmap[i].scaled(240,135)
-            miniatures_label[i].setPixmap(miniatures_pixmap[i])
-            miniatures_label[i].setScaledContents(False)
-            miniatures_label[i].setGeometry(0,0,240,135)
-            self.ImageGlayout.addWidget(miniatures_label[i],i//5,i%5)
-        """
-
-        path2pictures = 'C:\\Users\\ewenl\\Documents\\IMT Atlantique\\2A\\Projet commande entreprise\\Code\\Surf'
-        listPictures = listdir(path2pictures)
-        miniatures_label ={}
-        photo_pixmap = {}
-        photo_pixmap_overscaled = {}
-        photo_pixmap_overscaled_cropped = {}
-        photo_pixmap_scaled= {}
-
-##        photo_pixmap = QPixmap('/home/toiture/Pictures/PINGOUIN-TORDA-1.jpg')
-
-        for i in range(len(listPictures)) :
-            miniatures_label[i] = QtWidgets.QLabel()
-            photo_pixmap[i] = QtGui.QPixmap(path2pictures+'\\'+listPictures[i])
-##            photo_pixmap[i] = QtGui.QPixmap('C:\\Users\\ewenl\\Documents\\IMT Atlantique\\2A\\Projet commande entreprise\\Code\\Surf\\23-09-21 - 12h07 - PoulpyCup-Surf - 001.jpg')
-
-            #On rend d'abord la photo en temps que carré 1024x1024px (ici, on ne fait que la réduire en taille pour que son plus petit coté fasse 1024px)
-            photo_pixmap_overscaled[i] = photo_pixmap[i].scaled(1024, 1024, aspectRatioMode=Qt.KeepAspectRatioByExpanding)
-
-            #On centre le carré sur l'image, car c'est souvent au centre de la photo ce qui est intéressant
-            aleft = (photo_pixmap_overscaled[i].width() - 1024) // 2
-            atop = (photo_pixmap_overscaled[i].height() - 1024) // 2
-            photo_pixmap_overscaled_cropped[i] = photo_pixmap_overscaled[i].copy(QtCore.QRect(aleft, atop, 1024, 1024));
-
-            #Ensuite on la réduit de taille d'un facteur 4 avec un smooth, qui permet d'avoir un joli rendu
-            photo_pixmap_scaled[i] = photo_pixmap_overscaled_cropped[i].scaled(256, 256, transformMode=Qt.SmoothTransformation)
-
-            miniatures_label[i].setPixmap(photo_pixmap_scaled[i])
-            self.ImageGlayout.addWidget(miniatures_label[i],i//5,i%5)
+        self.path2pictures = 'C:\\Users\\ewenl\\Documents\\IMT Atlantique\\2A\\Projet commande entreprise\\Code\\Surf'
+        self.listPictures = listdir(self.path2pictures)
+        self.miniatures_label ={}
+        self.photo_pixmap = {}
+        self.photo_pixmap_overscaled = {}
+        self.photo_pixmap_overscaled_cropped = {}
+        self.photo_pixmap_scaled= {}
+        self.n = 25
+        self.i = 0
+        self.add_miniatures()
 
         self.ImageGWidget.setLayout(self.ImageGlayout)
         self.ImageScroll.setWidget(self.ImageGWidget)
         self.ImageVLayout.addWidget(self.ImageScroll)
+
+        self.load_button = QtWidgets.QPushButton(self.ImageWidget)
+        self.load_button.setText("charger plus d'images")
+        self.ImageVLayout.addWidget(self.load_button)
 
         self.ImageWidget.setLayout(self.ImageVLayout)
         self.topLayout.addWidget(self.ImageWidget,5)
@@ -151,6 +122,65 @@ class Window(QMainWindow):
 
         self.centralWidget.setLayout(self.centralLayout)
         self.setCentralWidget(self.centralWidget)
+
+
+##        self.load_action = QAction("charger plus d'images")
+        self.load_button.clicked.connect(self.load_more_miniatures)
+
+
+    def add_miniatures(self) :
+
+##        photo_pixmap = QPixmap('/home/toiture/Pictures/PINGOUIN-TORDA-1.jpg')
+
+        while self.i < self.n and self.i < len(self.listPictures) :
+            self.miniatures_label[self.i] = QtWidgets.QLabel()
+            self.photo_pixmap[self.i] = QtGui.QPixmap(self.path2pictures+'\\'+self.listPictures[self.i])
+##            photo_pixmap[i] = QtGui.QPixmap('C:\\Users\\ewenl\\Documents\\IMT Atlantique\\2A\\Projet commande entreprise\\Code\\Surf\\23-09-21 - 12h07 - PoulpyCup-Surf - 001.jpg')
+
+            #On rend d'abord la photo en temps que carré 1024x1024px (ici, on ne fait que la réduire en taille pour que son plus petit coté fasse 1024px)
+            self.photo_pixmap_overscaled[self.i] = self.photo_pixmap[self.i].scaled(1024, 1024, aspectRatioMode=Qt.KeepAspectRatioByExpanding)
+
+            #On centre le carré sur l'image, car c'est souvent au centre de la photo ce qui est intéressant
+            aleft = (self.photo_pixmap_overscaled[self.i].width() - 1024) // 2
+            atop = (self.photo_pixmap_overscaled[self.i].height() - 1024) // 2
+            self.photo_pixmap_overscaled_cropped[self.i] = self.photo_pixmap_overscaled[self.i].copy(QtCore.QRect(aleft, atop, 1024, 1024));
+
+            #Ensuite on la réduit de taille d'un facteur 4 avec un smooth, qui permet d'avoir un joli rendu
+            self.photo_pixmap_scaled[self.i] = self.photo_pixmap_overscaled_cropped[self.i].scaled(256, 256, transformMode=Qt.SmoothTransformation)
+
+            self.miniatures_label[self.i].setPixmap(self.photo_pixmap_scaled[self.i])
+            self.miniatures_label[self.i].setFixedSize(256,256)
+            self.ImageGlayout.addWidget(self.miniatures_label[self.i],self.i//5,self.i%5)
+            self.i += 1
+
+    def load_more_miniatures(self) :
+        self.n += 25
+        if self.n > len(self.listPictures) :
+            self.load_button.setText("Il n'y a pas plus d'images à charger")
+        else :
+##            self.add_miniatures(self)
+            while self.i < self.n and self.i < len(self.listPictures) :
+                self.miniatures_label[self.i] = QtWidgets.QLabel()
+                self.photo_pixmap[self.i] = QtGui.QPixmap(self.path2pictures+'\\'+self.listPictures[self.i])
+    ##            photo_pixmap[i] = QtGui.QPixmap('C:\\Users\\ewenl\\Documents\\IMT Atlantique\\2A\\Projet commande entreprise\\Code\\Surf\\23-09-21 - 12h07 - PoulpyCup-Surf - 001.jpg')
+
+                #On rend d'abord la photo en temps que carré 1024x1024px (ici, on ne fait que la réduire en taille pour que son plus petit coté fasse 1024px)
+                self.photo_pixmap_overscaled[self.i] = self.photo_pixmap[self.i].scaled(1024, 1024, aspectRatioMode=Qt.KeepAspectRatioByExpanding)
+
+                #On centre le carré sur l'image, car c'est souvent au centre de la photo ce qui est intéressant
+                aleft = (self.photo_pixmap_overscaled[self.i].width() - 1024) // 2
+                atop = (self.photo_pixmap_overscaled[self.i].height() - 1024) // 2
+                self.photo_pixmap_overscaled_cropped[self.i] = self.photo_pixmap_overscaled[self.i].copy(QtCore.QRect(aleft, atop, 1024, 1024));
+
+                #Ensuite on la réduit de taille d'un facteur 4 avec un smooth, qui permet d'avoir un joli rendu
+                self.photo_pixmap_scaled[self.i] = self.photo_pixmap_overscaled_cropped[self.i].scaled(256, 256, transformMode=Qt.SmoothTransformation)
+
+                self.miniatures_label[self.i].setPixmap(self.photo_pixmap_scaled[self.i])
+                self.miniatures_label[self.i].setFixedSize(256,256)
+                self.ImageGlayout.addWidget(self.miniatures_label[self.i],self.i//5,self.i%5)
+                self.i += 1
+
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
