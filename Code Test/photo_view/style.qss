@@ -1,12 +1,12 @@
 
-/* Couleur du texte */
+        /**** Couleur du texte ****/
 
 QWidget {
-    /* Couleur du texte */
+    /* Couleur du texte en général */
     color: #eee;
 }
 
-/* Couleurs de fond */
+        /**** Couleurs de fond ****/
 
 QMainWindow {
     /* Couleur de fond de l'application */
@@ -14,16 +14,16 @@ QMainWindow {
 }
 
 QMessageBox {
-    /* Couleur de fond de l'application */
+    /* Couleur de fond des popups */
     background-color: #252732;
 }
 
 #panel-color {
-    background-color: #303446;
+    /* Couleur de fond des menus (il faut le changer dans central_view.py et central_view_photo.py aussi) */
     background: #303446;
 }
 
-/* MenuBar buttons */
+        /**** Les boutons de menu en haut ****/
 
 QMenuBar {
     /* Couleur de fond de la barre de menu */
@@ -36,7 +36,7 @@ QMenuBar::item:selected {
 }
 
 QMenuBar::item:disabled {
-    /* Couleur de fond du menu sélectionné */
+    /* Couleur de fond des menu inaccessibles (ex: Photo quand on est dans photo) */
     color: #888;
 }
 
@@ -50,34 +50,45 @@ QMenu::item:selected {
     background-color: #1e212c;
 }
 
-/* Generic buttons */
+        /**** Les boutons en général ****/
 
+/* Les boutons normaux */
 QPushButton, QToolButton {
     background-color: #1e61a2;
-    border-radius: 0px;
+    border-radius: 2px; /*Pas sur que y'ait besoin de coins arrondis*/
     padding: 8px;
 }
 
+/* Les boutons de série à gauche */
 QPushButton#serie-button {
     margin: 2px 4px 2px 4px ;
 }
 
+/* Les boutons survolés */
 QPushButton:hover, QToolButton:hover {
     background-color: #2278ce;
 }
+
+/* Les boutons appuyés */
 QPushButton:pressed, QToolButton:pressed {
     background-color: #23517f;
 }
+
+/* Les boutons désactivés (quand une série ou photo est sélectionnée) */
 QPushButton:disabled, QToolButton:disabled {
     background-color: #318de9;
     margin: 0px;
+    border: 3px solid #5aa7f5;
 }
+
+/* Les boutons de navigation en bas désactivés */
 QToolButton:disabled#navigation_button {
     background-color: #13304d;
     margin: 0px;
+    border: none;
 }
 
-/* Scroll bars */
+        /**** Scroll bars ****/
 
 QScrollBar:vertical {
     background-color: #303030;

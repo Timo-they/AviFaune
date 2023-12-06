@@ -28,19 +28,12 @@ class ThumbnailButton(QToolButton):
 
 
     def eventFilter(self, object: QObject, event: QEvent) -> bool:
-            # if object == self.widget and event.type() == QEvent.Resize:
-            #     print("Setting the size to ", self.width())
-            #     if self.verticalScrollBar().isVisible():
-            #         self.widget.setFixedWidth(self.width() - 8)
-            #     else:
-            #         self.widget.setFixedWidth(self.width())
-            if object == self and event.type() == QEvent.Resize:
-                #print("Setting the size to ", self.width())
-                width = self.height()
-                self.setFixedWidth(width)
-                self.setIconSize(QSize(width, width))
+        if object == self and event.type() == QEvent.Resize:
+            width = self.height()
+            self.setFixedWidth(width)
+            self.setIconSize(QSize(width, width))
 
-            return False
+        return False
 
     def set_thumbnail(self, pixmap: QPixmap):
          icon = QIcon(pixmap)

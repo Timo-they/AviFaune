@@ -34,7 +34,3 @@ class CentralButton(QToolButton):
             self.setIconSize(QSize(height-17, height-17))
 
         return False
-
-    # def set_thumbnail(self, pixmap: QPixmap):
-    #     icon = QIcon(pixmap)
-    #     self.setIcon(icon)

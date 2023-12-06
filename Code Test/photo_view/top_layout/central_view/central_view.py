@@ -17,17 +17,21 @@ class CentralView(QWidget):
     view_box: QVBoxLayout
     title_label: QLabel
 
+    # C'est la liste de tous les boutons associés à chaque photo de la série
     thumbnail_buttons: dict
+    # {
+    #   "0": Button,
+    #   "1": Button
+    # }
 
     thumnbnail_loader: ThumbnailLoader
-    threadpool: QThreadPool
 
     def __init__(self, parent = None):
         super().__init__(parent)
 
         self.thumbnail_buttons = {}
-        self.threadpool = QThreadPool()
 
+        # Ca c'est pour la couleur de fond
         palette = QPalette()
         palette.setColor(QPalette.Window, QColor("#303446"))
 
@@ -41,14 +45,17 @@ class CentralView(QWidget):
     def build_central_view(self):
         self.view_box = QVBoxLayout(self)
 
+        # Le titre de la vue
         self.title_label = QLabel("Aucune série sélectionnée")
         self.view_box.addWidget(self.title_label)
 
+        # La barre séparatrice
         separator = QFrame()
         separator.setFrameShape(QFrame.HLine)
         separator.setFrameShadow(QFrame.Sunken)
         self.view_box.addWidget(separator)
 
+        # La liste scrollable des photos
         scroll = ScrollAreaCentral()
         scroll_widget = scroll.widget
         self.view_box.addWidget(scroll)
@@ -61,7 +68,9 @@ class CentralView(QWidget):
 
         intermediate_vbox.addWidget(QWidget())
     
+    # Quand la série courante et changée
     def update(self):
+        # On enlève tous les boutons des photos
         children = []
         for i in range(self.central_grid.count()):
             child = self.central_grid.itemAt(i).widget()
@@ -72,14 +81,17 @@ class CentralView(QWidget):
         
         self.thumbnail_buttons = {}
 
+        # S'il y a pas de photos affichée, on change que le titre
         if datas.get_current_serie() == "":
             self.title_label.setText("Aucune série sélectionnée")
             return
 
         self.title_label.setText(datas.get_current_serie_path() + " (" + str(len(datas.get_photos())) + " photos)")
 
+        # On charge l'image par défaut
         placeholder_pixmap = self.load_placeholder()
         
+        # On ajoute tous les boutons un à un avec la miniature par défaut
         i = 0
         for id, path in datas.get_photos().items():
             button = CentralButton(id, path, placeholder_pixmap)
@@ -89,6 +101,8 @@ class CentralView(QWidget):
             self.thumbnail_buttons[id] = button
             i += 1
         
+        # On charge les miniatures
+        # TODO : le faire dans un autre thread
         print("Multithreading with maximum %d threads" %  QThreadPool.globalInstance().maxThreadCount())
         if QThreadPool.globalInstance().activeThreadCount() > 0:
             print(datas.COLOR_BRIGHT_RED, "Le thread de miniatures est encore en cours... On attend qu'ca finisse")
@@ -114,7 +128,7 @@ class CentralView(QWidget):
         # self.thumnbnail_loader_thread.start()
         # print(datas.COLOR_BRIGHT_YELLOW, "end", datas.COLOR_RESET)
 
-    
+    # Charge la miniature par défaut
     def load_placeholder(self) -> QPixmap:
         photo_pixmap = QPixmap("icons/placeholder-square.jpg")
 
@@ -129,10 +143,11 @@ class CentralView(QWidget):
         #Ensuite on la réduit de taille d'un facteur 4 avec un smooth, qui permet d'avoir un joli rendu
         return photo_pixmap_overscaled_cropped.scaled(256, 256, transformMode=Qt.SmoothTransformation)
 
+    # Ouvre une photo cliquée
     def open_photo(self, id: str):
-        print("Opening photo ", id)
         datas.set_current_photo(id)
     
+    # Fonction pour changer la miniature d'une photo
     def set_thumbnail_photo(self, icon: QIcon, id: str, id_serie: str):
         button = self.thumbnail_buttons.get(id)
 

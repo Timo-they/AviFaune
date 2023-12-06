@@ -19,6 +19,9 @@ def load_datas():
             if datas_["stats"] != None:
                 datas.set_stats(datas_["stats"])
                 print(datas.COLOR_BLACK, "Loaded stats : ", datas.get_stats(), datas.COLOR_RESET)
+    
+    else:
+         print("Datas file not found.")
 
 
 def save_datas():
@@ -31,3 +34,8 @@ def save_datas():
     
     with open('datas.json', 'w') as f:
             json.dump(datas_, f)
+        
+    # NOTE : Ce serait possible aussi de sauvegarder les stats dans un dossier .torda/ dans le 
+    # dossier de série. Ca ferait que les données soient cachées, mais retrouvables facilement. Aussi, 
+    # si le dossier est déplacé, les stats sont conservées.
+    # Point bonus : si l'application est désinstallée puis réinstallée, les stats sont encore là

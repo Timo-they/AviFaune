@@ -17,7 +17,7 @@ class ThumbnailLoader(QRunnable):
     placeholder: QPixmap
 
     def __init__(self, placeholder: QPixmap) -> None:
-        super().__init__()
+        super(ThumbnailLoader, self).__init__()
 
         self.photos = datas.get_photos()
         self.serie = datas.get_current_serie()
@@ -26,7 +26,7 @@ class ThumbnailLoader(QRunnable):
         
         print("Init of ThumbnailLoader")
 
-    
+    # La fonction exécutée dans un autre thread
     @pyqtSlot()
     def run(self):
         print("Starting loading thread of size : ", len(self.photos))
@@ -34,13 +34,11 @@ class ThumbnailLoader(QRunnable):
         for id, path in self.photos.items():
             if datas.get_current_serie() == self.serie:
                 icon = self.load_thumbnail(path)
-                # TODO : load thumbnail
 
                 if datas.get_current_serie() == self.serie:
                     print("Loaded pic ", path)
                     datas.get_widget("central_view").set_thumbnail_photo(icon, id, self.serie)#thumbnail_buttons[id].setIcon(icon)
-                    pass
-                    # TODO : Set button thumbnail
+                    
                 else:
                     print(datas.COLOR_BRIGHT_RED, "ThumbnailLoader stilla active, tho changed serie")
             else:

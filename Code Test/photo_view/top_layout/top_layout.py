@@ -19,21 +19,34 @@ class TopLayout(QHBoxLayout):
         super().__init__(parent)
         datas.set_widget("top_layout", self)
 
+        # Mode d'affichage
+        # C'est une variable très locale
         self.mode = "series"
+        # "series" -> En mode affichage de série
+        # "photo" -> En mode affichage de photo
 
         self.build_top_layout()
     
     def build_top_layout(self):
+        # La vue de série (gauche)
         self.serie_view = SerieView()
+
+        # La vue de stats (droite)
         self.stat_view = StatView()
+
+        # La vue affichée au milieu en mode série
         self.central_view = CentralView()
+
+        # La vue affichée au milieu en mode photo
         self.central_view_photo = CentralViewPhoto()
 
         self.addWidget(self.serie_view, 1)
         self.addWidget(self.central_view, 4)
         self.addWidget(self.stat_view, 1)
 
+    # Quand la photo change ou que la série change
     def update(self):
+        # Passe soit en mode series soit photo
         if datas.get_current_photo() != "" and self.mode == "series":
             self.replaceWidget(self.central_view, self.central_view_photo)
             self.central_view.setVisible(False)

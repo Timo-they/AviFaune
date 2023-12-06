@@ -23,8 +23,10 @@ class ScrollAreaSerie(QScrollArea):
         self.setWidget(self.widget)
         self.widget.installEventFilter(self)
         self.installEventFilter(self)
+        
         self.widget.setObjectName("panel-color")
     
+    # C'est pour que ce qu'il y a dans la scrollarea soit bien resized
     def eventFilter(self, object: QObject, event: QEvent) -> bool:
         if object == self and event.type() == QEvent.Resize:
             if self.verticalScrollBar().isVisible():

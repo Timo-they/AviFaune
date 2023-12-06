@@ -20,23 +20,29 @@ class MenuBarHandler():
         self.connect_actions()
         self.add_actions()
     
+    # On instancie toutes les actions possibles du menu
     def create_actions(self):
         oizo_window = datas.get_widget("oizo_window")
 
+        # Le menu de Fichier
         self.open_folder_as_serie_action = QAction("Ajouter un dossier", oizo_window)
+        # TODO : Voir si on met des tooltips pour chacun...
         self.open_folder_as_serie_action.setToolTip("Ajoute un dossier en tant que série")
         self.create_remove_serie_actions()
         self.export_global_stats_action = QAction("Exporter les statistiques", oizo_window)
         self.close_app_action = QAction("Fermer l'application", oizo_window)
 
+        # Le menu de Série
         self.auto_detect_whole_serie_action = QAction("Effectuer la détection d'oiseaux sur la série", oizo_window)
         self.export_serie_stats_action = QAction("Exporter les statistiques de la série", oizo_window)
         self.remove_serie_action = QAction("Enlever la série", oizo_window)
         self.close_serie_action = QAction("Fermer la série", oizo_window)
 
+        # Le menu de Photo
         self.auto_detect_photo_action = QAction("Effectuer la détection d'oiseaux sur la photo", oizo_window)
         self.close_photo_action = QAction("Fermer la photo", oizo_window)
 
+    # Ca c'est pour qu'on ai un bouton de suppression pour chaque série
     def create_remove_serie_actions(self):
         oizo_window = datas.get_widget("oizo_window")
         self.remove_serie_actions = []
@@ -47,20 +53,29 @@ class MenuBarHandler():
             action.triggered.connect(partial(self.remove_serie, id, path))
             self.remove_serie_actions.append(action)
 
-
+    # On connecte toutes les actions à leur fonction associée
     def connect_actions(self):
+        # Le menu de Fichier
         self.open_folder_as_serie_action.triggered.connect(self.open_folder_as_serie)
+        self.export_global_stats_action.triggered.connect(self.export_global_stats)
         self.close_app_action.triggered.connect(self.close_app)
 
+        # Le menu de Série
+        self.auto_detect_whole_serie_action.triggered.connect(self.auto_detect_whole_serie)
+        self.export_serie_stats_action.triggered.connect(self.export_serie_stats)
         self.remove_serie_action.triggered.connect(self.remove_current_serie)
         self.close_serie_action.triggered.connect(self.close_serie)
 
+        # Le menu de Photo
+        self.auto_detect_photo_action.triggered.connect(self.auto_detect_photo)
         self.close_photo_action.triggered.connect(self.close_photo)
 
+    # Finalement on construit tout le menu
     def add_actions(self):
         oizo_window: QMainWindow = datas.get_widget("oizo_window")
         menu_bar: QMenuBar = oizo_window.menuBar()
 
+        # Le menu de Fichier
         self.menu_fichier: QMenu = menu_bar.addMenu("Fichier")
         self.menu_fichier.setToolTipsVisible(True)
 
@@ -72,6 +87,7 @@ class MenuBarHandler():
         self.menu_fichier.addAction(self.export_global_stats_action)
         self.menu_fichier.addAction(self.close_app_action)
 
+        # Le menu de Série
         self.menu_serie: QMenu = menu_bar.addMenu("Série")
         self.menu_serie.setToolTipsVisible(True)
         self.menu_serie.setEnabled(False)
@@ -81,12 +97,29 @@ class MenuBarHandler():
         self.menu_serie.addAction(self.remove_serie_action)
         self.menu_serie.addAction(self.close_serie_action)
 
+        # Le menu de Photo
         self.menu_photo: QMenu = menu_bar.addMenu("Photo")
         self.menu_photo.setToolTipsVisible(True)
         self.menu_photo.setEnabled(False)
 
         self.menu_photo.addAction(self.auto_detect_photo_action)
         self.menu_photo.addAction(self.close_photo_action)
+
+    #Quand la série actuelle ou la photo actuelle ou la liste des séries changent
+    def update(self):
+        # Met à jour l'accès aux menus Série et Photo
+        self.menu_serie.setEnabled(datas.get_current_serie() != "")
+        self.menu_photo.setEnabled(datas.get_current_photo() != "")
+
+        # Met à jour les séries qu'on peut supprimer
+        self.menu_fichier_remove_serie.clear()
+        self.create_remove_serie_actions()
+
+        for action in self.remove_serie_actions:
+            self.menu_fichier_remove_serie.addAction(action)
+    
+
+    ### FICHIER ###
 
     def open_folder_as_serie(self):
         print("Opening a folder...")
@@ -122,14 +155,29 @@ class MenuBarHandler():
         
         else:
             print("Aborted.")
-    
-    def export_stats(self):
-        print("Opening stats...")
 
+    def export_global_stats(self):
+        # TODO : Open File dialog to choose save path
+        # TODO : Save stats at given path as CSV File
+        print("TODO : Open File dialog to choose save path")
+        print("TODO : Save stats at given path as CSV File")
+    
     def close_app(self):
         print("Closing app...")
         datas.get_widget("oizo_window").close()
     
+    ### SERIE ###
+
+    def auto_detect_whole_serie(self):
+        # TODO : Generate stats for every photo of the serie
+        print("TODO : Generate stats for every photo of the serie")
+
+    def export_serie_stats(self):
+        # TODO : Open File dialog to choose save path
+        # TODO : Save stats at given path as CSV File
+        print("TODO : Open File dialog to choose save path")
+        print("TODO : Save stats at given path as CSV File")
+
     def remove_current_serie(self):
         self.remove_serie(datas.get_current_serie(), datas.get_current_serie_path())
 
@@ -137,17 +185,14 @@ class MenuBarHandler():
         datas.set_current_serie("")
 
 
+    ### PHOTO ####
+
+    def auto_detect_photo(self):
+        # TODO : Generate stats for current photo
+        print("TODO : Generate stats for current photo")
+
     def close_photo(self):
         datas.set_current_photo("")
     
 
-    def update(self):
-        self.menu_serie.setEnabled(datas.get_current_serie() != "")
-        self.menu_photo.setEnabled(datas.get_current_photo() != "")
-
-        self.menu_fichier_remove_serie.clear()
-        self.create_remove_serie_actions()
-
-        for action in self.remove_serie_actions:
-            self.menu_fichier_remove_serie.addAction(action)
 

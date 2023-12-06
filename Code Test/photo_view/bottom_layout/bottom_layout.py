@@ -32,6 +32,7 @@ class BottomLayout(QHBoxLayout):
         self.build_bottom_layout()
 
     def build_bottom_layout(self):
+        # Bouton pour aller à la photo précédente
         self.previous_button = QToolButton()
         self.previous_button.setObjectName("navigation_button")
         self.previous_button.setArrowType(Qt.LeftArrow)
@@ -39,9 +40,11 @@ class BottomLayout(QHBoxLayout):
         self.previous_button.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.previous_button.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Expanding)
         self.previous_button.setMinimumHeight(80)
+        self.previous_button.setDisabled(True)
         self.previous_button.clicked.connect(self.go_to_previous_photo)
         self.addWidget(self.previous_button)
 
+        # Liste scrollable des images
         scroll = ScrollAreaBottom()
         scroll_widget = scroll.widget
         self.addWidget(scroll)
@@ -54,17 +57,20 @@ class BottomLayout(QHBoxLayout):
 
         intermediate_hbox.addWidget(QWidget())
         
+        # Bouton pour aller à la photo suivante
         self.next_button = QToolButton()
         self.next_button.setObjectName("navigation_button")
         self.next_button.setArrowType(Qt.RightArrow)
         self.next_button.setAutoRaise(True)
         self.next_button.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.next_button.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.next_button.setDisabled(True)
         self.next_button.clicked.connect(self.go_to_next_photo)
         self.addWidget(self.next_button)
     
+    # Quand la série est changée
     def update_selected_serie(self):
-        # Clear buttons
+        # On enlève tous les boutons
         children = []
         for i in range(self.thumbnails_box.count()):
             child = self.thumbnails_box.itemAt(i).widget()
@@ -73,29 +79,37 @@ class BottomLayout(QHBoxLayout):
         for child in children:
             child.deleteLater()
         
-        # Reset link to buttons
+        # On réinitialise la liste des liens aux boutons
         self.thumbnail_buttons = {}
 
-        # No serie, diable
+        # Pas de série, donc on ne peut pas naviguer entre les photos
         if datas.get_current_serie() == "":
             self.previous_button.setDisabled(True)
             self.next_button.setDisabled(True)
             return
 
-        # Bottom buttons
         photo = datas.get_current_photo()
         photos_ids = list(datas.get_photos().keys())
 
-        if photo == "" or len(datas.get_photos()) == 0:
+        # Pas de photos affichée encore, mais on peut en afficher, donc on peut naviguer à la première
+        if photo == "" and len(datas.get_photos()) > 0:
             self.previous_button.setDisabled(False)
             self.next_button.setDisabled(False)
-        else:
+        
+        # Il y a une photo affichée, donc on peut naviguer si on est pas en bout
+        elif photo != "":
             self.previous_button.setDisabled(photos_ids.index(photo) == 0)
             self.next_button.setDisabled(photos_ids.index(photo) == len(photos_ids)-1)
+        
+        # Il n'y a pas de photo sélectionnée et y'en a pas à afficher
+        else:
+            self.previous_button.setDisabled(True)
+            self.next_button.setDisabled(True)
 
-        # The buttons
+        # On charge la miniature par défaut
         placeholder_pixmap = self.load_placeholder()
-
+        
+        # On ajoute tous les boutons de photo
         for id, path in datas.get_photos().items():
             button = ThumbnailButton(id, path, placeholder_pixmap)
             button.clicked.connect(partial(self.open_photo, id))
@@ -103,8 +117,9 @@ class BottomLayout(QHBoxLayout):
             self.thumbnails_box.addWidget(button)
             self.thumbnail_buttons[id] = button
 
+    # Quand la photo change
     def update_selected_photo(self, last_selected: str, new_selected: str):
-        # Bottom buttons
+        # Pas de série, donc on ne peut pas naviguer entre les photos
         if datas.get_current_serie() == "":
             self.previous_button.setDisabled(True)
             self.next_button.setDisabled(True)
@@ -113,19 +128,32 @@ class BottomLayout(QHBoxLayout):
         photo = datas.get_current_photo()
         photos_ids = list(datas.get_photos().keys())
 
-        if photo == "" or len(datas.get_photos()) == 0:
+        # Pas de photos affichée encore, mais on peut en afficher, donc on peut naviguer à la première
+        if photo == "" and len(datas.get_photos()) > 0:
             self.previous_button.setDisabled(False)
             self.next_button.setDisabled(False)
-        else:
+        
+        # Il y a une photo affichée, donc on peut naviguer si on est pas en bout
+        elif photo != "":
             self.previous_button.setDisabled(photos_ids.index(photo) == 0)
             self.next_button.setDisabled(photos_ids.index(photo) == len(photos_ids)-1)
+        
+        # Il n'y a pas de photo sélectionnée et y'en a pas à afficher
+        else:
+            self.previous_button.setDisabled(True)
+            self.next_button.setDisabled(True)
 
-        # Selected button
+        # On fait que l'image précédente n'est plus sélectionnée
         if last_selected != "":
             self.thumbnail_buttons[last_selected].setDisabled(False)
+        
+        # On fait que la nouvelle image est sélectionnée
         if new_selected != "":  
             self.thumbnail_buttons[new_selected].setDisabled(True)
+        
+        # TODO : Scroll so that the thumbnail is in the center of the scrollbar
     
+    # Charge la miniature par défaut
     def load_placeholder(self) -> QPixmap:
         photo_pixmap = QPixmap("icons/placeholder-square.jpg")
 
@@ -140,12 +168,11 @@ class BottomLayout(QHBoxLayout):
         #Ensuite on la réduit de taille d'un facteur 4 avec un smooth, qui permet d'avoir un joli rendu
         return photo_pixmap_overscaled_cropped.scaled(256, 256, transformMode=Qt.SmoothTransformation)
     
+    # On ouvre la nouvelle photo
     def open_photo(self, id: str):
-        print("Opening photo ", id)
         datas.set_current_photo(id)
 
-        # TODO : Scroll so that the thumbnail is in the center of the scrollbar
-
+    # On va à la photo suivante
     def go_to_next_photo(self):
         if datas.get_current_serie() == "":
             return
@@ -161,6 +188,7 @@ class BottomLayout(QHBoxLayout):
         new_photo = photos_ids[photos_ids.index(photo) + 1]
         datas.set_current_photo(new_photo)
 
+    # On va à la photo précédente
     def go_to_previous_photo(self):
         if datas.get_current_serie() == "":
             return

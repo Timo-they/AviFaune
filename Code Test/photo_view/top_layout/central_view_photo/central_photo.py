@@ -24,12 +24,14 @@ class CentralPhoto(QWidget):
         
         self.installEventFilter(self)
     
+    # Quand la fenêtre est resize
     def eventFilter(self, object: QObject, event: QEvent) -> bool:
         if object == self and event.type() == QEvent.Resize and not self.qlabel.pixmap() == None:
             self.resize()
 
         return False
 
+    # On centre l'image sur le QWidget
     def resize(self):
         widget_ratio = self.width() / self.height()
         qlabel_ratio = self.qlabel.pixmap().width() / self.qlabel.pixmap().height()
@@ -52,7 +54,6 @@ class CentralPhoto(QWidget):
 
             self.qlabel.setGeometry(qlabel_x, qlabel_y, qlabel_width, qlabel_height)
 
-            
     
     def set_pixmap(self, photo_pixmap):
         #self.initial_pixmap = photo_pixmap
