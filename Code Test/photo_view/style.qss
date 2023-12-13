@@ -17,6 +17,10 @@ QMessageBox {
     /* Couleur de fond des popups */
     background-color: #252732;
 }
+QInputDialog {
+    /* Couleur de fond des popups */
+    background-color: #252732;
+}
 
 #panel-color {
     /* Couleur de fond des menus (il faut le changer dans central_view.py et central_view_photo.py aussi) */
@@ -128,5 +132,17 @@ QScrollBar::handle:horizontal:pressed {
 
 QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal, QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
     width: 0px;
+}
+
+#cadre {
+    border: 2px solid red
+}
+
+QSpinBox, QLineEdit {
+    background: #0f4e8d;
+}
+
+QSpinBox:disabled {
+    background: #13304d;
 }
 

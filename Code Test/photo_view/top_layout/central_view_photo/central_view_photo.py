@@ -60,6 +60,7 @@ class CentralViewPhoto(QWidget):
         # Affichage central de la photo
         self.center_image = CentralPhoto()
         self.view_box.addWidget(self.center_image)
+
     
     # Quand la photo change
     def update(self):
@@ -77,4 +78,6 @@ class CentralViewPhoto(QWidget):
     # Retourne à la vue de série
     def go_back_to_series(self):
         datas.set_current_photo("")
-
+    
+    def set_boxes(self, boxes):
+        pass

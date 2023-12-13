@@ -5,7 +5,7 @@ import whole.serie_scanner as serie_scanner
 
 
 # Les couleurs pour print dans le terminal
-COLOR_BLACK = '\u001b[30m'
+COLOR_BLACK = '\u001b[30m' # J'ai décidé que c'était pour print les grosses datas (toutes les séries, toutes les stats)
 COLOR_RED = '\u001b[31m'
 COLOR_GREEN = '\u001b[32m' # J'ai décidé que c'était pour print les titres de l'app
 COLOR_YELLOW = '\u001b[33m'
@@ -13,7 +13,7 @@ COLOR_BLUE = '\u001b[34m'
 COLOR_MAGENTA = '\u001b[35m'
 COLOR_CYAN = '\u001b[36m'
 
-COLOR_BRIGHT_BLACK =  '\u001b[30;1m' # J'ai décidé que c'était pour print les grosses datas (toutes les séries, toutes les stats)
+COLOR_BRIGHT_BLACK =  '\u001b[30;1m'
 COLOR_BRIGHT_RED = '\u001b[31;1m' # J'ai décidé que c'était pour print les erreurs
 COLOR_BRIGHT_GREEN = '\u001b[32;1m'
 COLOR_BRIGHT_YELLOW = '\u001b[33;1m'
@@ -37,6 +37,7 @@ widgets_: dict = {
     "serie_view": None,
     "central_view": None,
     "central_view_photo": None,
+    "central_photo": None,
 }
 
 def get_widget(name: str):
@@ -50,7 +51,7 @@ def set_widget(name: str, widget):
 global series_
 
 # C'est le dictionnaire avec toutes les séries enregistrées
-# UNE DES DEUX DATAS SAUVEGARDEE
+# UNE DES TROIS DATAS SAUVEGARDEE
 series_: dict = {}
 # {
 #    "0": "/home/arthur/pingouins/",
@@ -86,6 +87,8 @@ def add_serie(path: str):
     print(COLOR_BLACK, "Data new series ", series_, COLOR_RESET)
 
     set_current_serie(str(max_id+1))
+
+    datas_loader_saver.save_datas()
 
 def remove_serie(id: str):
     global datas_loader_saver
@@ -137,9 +140,11 @@ def set_current_serie(new_serie: str):
 
     # Met à jour pour que la bonne série soit affichée à l'écran
     get_widget("serie_view").update()
-    get_widget("central_view").update()
+    get_widget("bottom_layout").update()
     get_widget("bottom_layout").update_selected_serie()
+    get_widget("central_view").update()
     get_widget("menu_bar_handler").update()
+    get_widget("stat_view").update()
 
 
 # PHOTOS
@@ -193,19 +198,83 @@ def set_current_photo(new_photo: str):
     get_widget("top_layout").update()
     get_widget("central_view_photo").update()
     get_widget("menu_bar_handler").update()
+    get_widget("stat_view").update()
+
+
+# SPECIES
+global species_
+
+BASE_SPECIES: dict = {
+    "0": "Bécasseau Sanderling",
+    "1": "Bernache Cravant",
+    "2": "Goéland Argenté",
+    "3": "Mouette Rieuse",
+    "4": "Pluvier Argenté",
+}
+
+# C'est le dictionnaire avec toutes les espèces enregistrables
+# UNE DES TROIS DATAS SAUVEGARDEE
+species_: dict = {}
+# "-1" is for "Autre" category
+
+def get_species():
+    return BASE_SPECIES | species_ | {"-1": "Autre"}
+
+def set_species(new_species: dict):
+    global datas_loader_saver, species_
+    last_species = get_species()
+    species_ = new_species
+
+    print(COLOR_BLACK, "Data setting species from ", last_species, " to ", get_species(), COLOR_RESET)
+
+    get_widget("stat_view").update()
+
+    datas_loader_saver.save_datas()
+
+def add_specie(new_specie: str):
+    global datas_loader_saver
+    max_id = 0
+
+    for id in species_.keys():
+        if int(id) > max_id:
+            max_id = int(id)
+
+    print(COLOR_BRIGHT_MAGENTA, "Data adding specie ", new_specie, " as ", max_id+1, COLOR_RESET)
+
+    species_[str(max_id+1)] = new_specie
+    print(COLOR_BLACK, "Data new species ", get_species(), COLOR_RESET)
+
+    get_widget("stat_view").update()
+
+    datas_loader_saver.save_datas()
+
+def remove_specie(id_specie: str):
+    global datas_loader_saver
+    print(COLOR_BRIGHT_MAGENTA, "Data removing specie ", species_[id_specie], " with id : ", id_specie, COLOR_RESET)
+
+    del species_[id_specie]
+
+    get_widget("stat_view").update()
+
+    # TODO : Remove all stats that uses that specie
+    
+    datas_loader_saver.save_datas()
 
 
 # STATS
 global stats_
 
 # C'est le dictionnaire avec toutes les stats enregistrées
-# UNE DES DEUX DATAS SAUVEGARDEE
+# UNE DES TROIS DATAS SAUVEGARDEE
 stats_: dict = {}
 # {
 #     #ID of serie
 #     "0": {
+#         "global": {
+#             "0": "1"  #ID of specie
+#         },
 #         "pingouin.png": {
-#             "pingouin_count": 1
+#             "3": "0"
 #         }
 #     }
 #}
@@ -236,26 +305,40 @@ def set_stats(new_stats: dict):
     print(COLOR_BLACK, "Data setting stats from ", get_stats(), " to ", new_stats, COLOR_RESET)
     stats_ = new_stats
 
-    # TODO : Update UI
+    get_widget("stat_view").update()
 
     datas_loader_saver.save_datas()
 
-def add_photo_stats(id_serie: str, id_photo: str, photo_stats: dict):
+def set_serie_stat(id_serie: str, id_specie: str, count: str):
     global datas_loader_saver
-    print(COLOR_BRIGHT_MAGENTA, "Data adding stat for the photo ", id_photo, " of serie ", id_serie, " with stats ", photo_stats, COLOR_RESET)
+    print(COLOR_BRIGHT_MAGENTA, "Data setting stat for serie ", id_serie, ", has ", count, " of specie ", id_specie, COLOR_RESET)
 
-    stats_[id_serie][photos_[current_photo_]] = photo_stats
+    stats_[id_serie]["global"] = count
 
-    # TODO : Update UI
+    get_widget("stat_view").update()
 
     datas_loader_saver.save_datas()
 
-def remove_stat(id_serie: str, id_photo: str):
+def set_photo_stat(id_serie: str, id_photo: str, id_specie: str, count : str):
+    global datas_loader_saver
+    print(COLOR_BRIGHT_MAGENTA, "Data adding stat for the photo ", id_photo, " of serie ", id_serie, ", has ", count, " of specie ", id_specie, COLOR_RESET)
+
+    stats_[id_serie][photos_[id_photo]][id_specie] = count
+    
+    # TODO: Recalculate stat of the whole serie
+
+    get_widget("stat_view").update()
+
+    datas_loader_saver.save_datas()
+
+def remove_stat_photo(id_serie: str, id_photo: str):
     global datas_loader_saver
     print(COLOR_BRIGHT_MAGENTA, "Data removing stat for the photo ", id_photo, " of serie ", id_serie, COLOR_RESET)
 
-    del stats_[id_serie][photos_[current_photo_]]
+    del stats_[id_serie][photos_[id_photo]]
 
-    # TODO : Update UI
+    # TODO: Recalculate stat of the whole serie
+
+    get_widget("stat_view").update()
     
     datas_loader_saver.save_datas()

@@ -7,13 +7,20 @@ from PyQt5.QtCore import QObject, QEvent, Qt
 
 import datas
 
+from top_layout.central_view_photo.cadre import Cadre
+
 
 class CentralPhoto(QWidget):
 
     qlabel: QLabel
 
+    cadres: list
+
     def __init__(self, parent = None):
         super().__init__(parent)
+        datas.set_widget("central_photo", self)
+
+        self.cadres = []
 
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.setMinimumHeight(100)
@@ -59,3 +66,22 @@ class CentralPhoto(QWidget):
         #self.initial_pixmap = photo_pixmap
         self.qlabel.setPixmap(photo_pixmap)
         self.resize()
+        self.remove_cadres()
+    
+    def remove_cadres(self):
+        for cadre in self.cadres:
+            cadre.deleteLater()
+        
+        self.cadres = []
+    
+    def set_boxes(self, boxes_classes, boxes_shapes):
+        # On enlève tous les cadres de la photo
+        self.remove_cadres()
+        
+        for i in range(len(boxes_shapes)):
+            cadre = Cadre(boxes_classes[i], boxes_shapes[i], self.qlabel, self.qlabel.pixmap())
+            cadre.show()
+            self.cadres.append(cadre)
+
+
+        

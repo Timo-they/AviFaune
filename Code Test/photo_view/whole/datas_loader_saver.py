@@ -12,16 +12,38 @@ def load_datas():
             datas_: dict = json.load(f)
             print("Opened datas file")
 
-            if datas_["series"] != None:
+            if datas_.get("series") != None:
                 datas.set_series(datas_["series"])
                 print(datas.COLOR_BLACK, "Loaded series : ", datas.get_series(), datas.COLOR_RESET)
             
-            if datas_["stats"] != None:
+            if datas_.get("stats") != None:
                 datas.set_stats(datas_["stats"])
                 print(datas.COLOR_BLACK, "Loaded stats : ", datas.get_stats(), datas.COLOR_RESET)
+            
+            if datas_.get("species") != None:
+                datas.set_species(datas_["species"])
+
+                # D'accord c'est hard codé, mais isoké
+                datas.set_species({
+                    "0": "Bécasseau Sanderling",
+                    "1": "Bernache Cravant",
+                    "2": "Goéland Argenté",
+                    "3": "Mouette Rieuse",
+                    "4": "Pluvier Argenté",
+                })
+                print(datas.COLOR_BLACK, "Loaded species : ", datas.get_species(), datas.COLOR_RESET)
+            
+            datas.set_species({
+                "0": "Bécasseau Sanderling",
+                "1": "Bernache Cravant",
+                "2": "Goéland Argenté",
+                "3": "Mouette Rieuse",
+                "4": "Pluvier Argenté",
+            })
     
     else:
-         print("Datas file not found.")
+         print("Datas file not found. Creating it...")
+         save_datas()
 
 
 def save_datas():
@@ -29,7 +51,8 @@ def save_datas():
 
     datas_ = {
         "series": datas.get_series(),
-        "stats": datas.get_stats()
+        "stats": datas.get_stats(),
+        "species": datas.get_species()
     }
     
     with open('datas.json', 'w') as f:

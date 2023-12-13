@@ -1,6 +1,10 @@
 
 
 
+
+import time
+import traceback, sys
+
 from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtCore import QObject, QThread, QRect, Qt, pyqtSignal, QRunnable, pyqtSlot
 
@@ -32,12 +36,14 @@ class ThumbnailLoader(QRunnable):
         print("Starting loading thread of size : ", len(self.photos))
 
         for id, path in self.photos.items():
+             #icon = self.load_thumbnail(path)
             if datas.get_current_serie() == self.serie:
                 icon = self.load_thumbnail(path)
 
                 if datas.get_current_serie() == self.serie:
                     print("Loaded pic ", path)
                     datas.get_widget("central_view").set_thumbnail_photo(icon, id, self.serie)#thumbnail_buttons[id].setIcon(icon)
+                    datas.get_widget("bottom_layout").set_thumbnail_photo(icon, id, self.serie)#thumbnail_buttons[id].setIcon(icon)
                     
                 else:
                     print(datas.COLOR_BRIGHT_RED, "ThumbnailLoader stilla active, tho changed serie")
@@ -59,3 +65,71 @@ class ThumbnailLoader(QRunnable):
         final_pixmap = photo_pixmap_overscaled_cropped.scaled(256, 256, transformMode=Qt.SmoothTransformation)
 
         return QIcon(final_pixmap)
+
+
+
+class WorkerSignals(QObject):
+    '''
+    Defines the signals available from a running worker thread.
+
+    Supported signals are:
+
+    finished
+        No data
+
+    error
+        tuple (exctype, value, traceback.format_exc() )
+
+    result
+        object data returned from processing, anything
+
+    progress
+        int indicating % progress
+
+    '''
+    finished = pyqtSignal()
+    error = pyqtSignal(tuple)
+    result = pyqtSignal(object)
+    progress = pyqtSignal(int)
+
+
+class Worker(QRunnable):
+    '''
+    Worker thread
+
+    Inherits from QRunnable to handler worker thread setup, signals and wrap-up.
+
+    :param callback: The function callback to run on this worker thread. Supplied args and
+                     kwargs will be passed through to the runner.
+    :type callback: function
+    :param args: Arguments to pass to the callback function
+    :param kwargs: Keywords to pass to the callback function
+
+    '''
+
+    def __init__(self, fn, *args, **kwargs):
+        super(Worker, self).__init__()
+
+        # Store constructor arguments (re-used for processing)
+        self.fn = fn
+        self.args = args
+        self.kwargs = kwargs
+        self.signals = WorkerSignals()
+
+    @pyqtSlot()
+    def run(self):
+        '''
+        Initialise the runner function with passed args, kwargs.
+        '''
+
+        # Retrieve args/kwargs here; and fire processing using them
+        try:
+            result = self.fn(*self.args, **self.kwargs)
+        except:
+            traceback.print_exc()
+            exctype, value = sys.exc_info()[:2]
+            self.signals.error.emit((exctype, value, traceback.format_exc()))
+        else:
+            self.signals.result.emit(result)  # Return the result of the processing
+        finally:
+            self.signals.finished.emit()  # Done

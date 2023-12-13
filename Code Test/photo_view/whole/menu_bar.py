@@ -3,15 +3,19 @@
 
 from functools import partial
 import os
+from ultralytics import YOLO
 
-from PyQt5.QtWidgets import QAction, QMenu, QMainWindow, QMenuBar, QFileDialog, QMessageBox
+from PyQt5.QtWidgets import QAction, QMenu, QMainWindow, QMenuBar, QFileDialog, QMessageBox, QInputDialog
 
 import datas
 
 class MenuBarHandler():
 
+    model: YOLO
+
     def __init__(self):
         datas.set_widget("menu_bar_handler", self)
+        self.model = None
 
         self.build_menu_bar()
 
@@ -40,7 +44,13 @@ class MenuBarHandler():
 
         # Le menu de Photo
         self.auto_detect_photo_action = QAction("Effectuer la détection d'oiseaux sur la photo", oizo_window)
+        self.remove_detect_photo_action = QAction("Réinitialiser la détection d'oiseaux sur la photo", oizo_window)
         self.close_photo_action = QAction("Fermer la photo", oizo_window)
+
+        # Le menu d'Espèces
+        self.add_specie_action = QAction("Ajouter une nouvelle espèce d'oiseaux", oizo_window)
+        self.remove_specie_action = QAction("Enlever une espèce d'oiseaux", oizo_window)
+        self.change_specie_color_action = QAction("Changer la couleur d'une espèce", oizo_window)
 
     # Ca c'est pour qu'on ai un bouton de suppression pour chaque série
     def create_remove_serie_actions(self):
@@ -68,7 +78,13 @@ class MenuBarHandler():
 
         # Le menu de Photo
         self.auto_detect_photo_action.triggered.connect(self.auto_detect_photo)
+        self.remove_detect_photo_action.triggered.connect(self.remove_detect_photo)
         self.close_photo_action.triggered.connect(self.close_photo)
+
+        # Le menu d'Especes
+        self.add_specie_action.triggered.connect(self.add_specie)
+        self.remove_specie_action.triggered.connect(self.remove_specie)
+        self.change_specie_color_action.triggered.connect(self.change_specie_color)
 
     # Finalement on construit tout le menu
     def add_actions(self):
@@ -103,7 +119,16 @@ class MenuBarHandler():
         self.menu_photo.setEnabled(False)
 
         self.menu_photo.addAction(self.auto_detect_photo_action)
+        self.menu_photo.addAction(self.remove_detect_photo_action)
         self.menu_photo.addAction(self.close_photo_action)
+
+        # Le menu d'Espèces
+        self.menu_especes: QMenu = menu_bar.addMenu("Espèces")
+        self.menu_especes.setToolTipsVisible(True)
+
+        self.menu_especes.addAction(self.add_specie_action)
+        self.menu_especes.addAction(self.remove_specie_action)
+        self.menu_especes.addAction(self.change_specie_color_action)
 
     #Quand la série actuelle ou la photo actuelle ou la liste des séries changent
     def update(self):
@@ -127,6 +152,10 @@ class MenuBarHandler():
         dialog.setFileMode(QFileDialog.FileMode.ExistingFiles)
 
         folder = QFileDialog.getExistingDirectory(datas.get_widget("oizo_window"), "Select Directory")
+        
+        if folder == "":
+            print("No folder chosen")
+            return
         
         print("Folder chosen : " + folder + "/")
 
@@ -188,11 +217,56 @@ class MenuBarHandler():
     ### PHOTO ####
 
     def auto_detect_photo(self):
-        # TODO : Generate stats for current photo
-        print("TODO : Generate stats for current photo")
+        #   0: Bécasseau Sanderling
+        #   1: Bernache Cravant
+        #   2: Goéland Argenté
+        #   3: Mouette Rieuse
+        #   4: Pluvier Argenté
+
+        if self.model == None:
+            self.model = YOLO("whole/best.pt")
+        
+        prediction = self.model.predict(datas.get_current_photo_full_path(), save=True)
+
+        boxes_classes = prediction[0].boxes.cls.cpu()
+        boxes_shapes = prediction[0].boxes.xywh.cpu()
+        print(boxes_classes, boxes_shapes)
+
+        # TODO : set stats directly when autodetect
+        print("TODO : set stats directly when autodetect")
+
+        datas.get_widget("central_photo").set_boxes(boxes_classes, boxes_shapes)
+
+    def remove_detect_photo(self):
+        # TODO : Remove stats from photo
+        print("TODO : Remove stats from photo")
 
     def close_photo(self):
         datas.set_current_photo("")
+    
+
+    ### ESPECES ###
+
+    def add_specie(self):
+        oizo_window = datas.get_widget("oizo_window")
+        # TODO : Dialog to add specie
+        print("TODO : Dialog to add specie")
+        text, ok = QInputDialog.getText(oizo_window, "Ajout d'une espèce", "Saisis le nom de l'espèce que tu souhaite rajouter à l'application : ")
+
+        if ok and text != "":
+            print("Adding specie", text)
+            datas.add_specie(text)
+        
+        else:
+            print("Specie adding aborted")
+    
+    def remove_specie(self):
+        # TODO : Add menu to remove specie
+        print("TODO : Add menu to remove specie")
+    
+    def change_specie_color(self):
+        # TODO : Add menu to change the color of a specie
+        print("TODO : Add menu to change the color of a specie")
     
 
 

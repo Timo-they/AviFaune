@@ -10,7 +10,7 @@ import datas
 
 from top_layout.central_view.scroll_area_central import ScrollAreaCentral
 from top_layout.central_view.central_button import CentralButton
-from top_layout.central_view.thumbnail_loader import ThumbnailLoader
+from top_layout.central_view.thumbnail_loader import ThumbnailLoader, Worker
 
 class CentralView(QWidget):
 
@@ -30,6 +30,7 @@ class CentralView(QWidget):
         super().__init__(parent)
 
         self.thumbnail_buttons = {}
+        self.threadpool = QThreadPool()
 
         # Ca c'est pour la couleur de fond
         palette = QPalette()
@@ -111,6 +112,13 @@ class CentralView(QWidget):
 
         self.thumbnail_loader = ThumbnailLoader(placeholder_pixmap)
         QThreadPool.globalInstance().start(self.thumbnail_loader)
+        
+        # print("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
+        # # Pass the function to execute
+        # worker = Worker(self.a) # Any other args, kwargs are passed to the run function
+
+        # # Execute
+        # self.threadpool.start(worker)
 
         # if self.thumnbnail_loader_thread.isRunning():
         #     print(datas.COLOR_BRIGHT_RED, "The thred has not finished yet, waiting for it", datas.COLOR_RESET)
@@ -128,6 +136,11 @@ class CentralView(QWidget):
         # self.thumnbnail_loader_thread.start()
         # print(datas.COLOR_BRIGHT_YELLOW, "end", datas.COLOR_RESET)
 
+    def a(self):
+        for x in range(50):
+            self.load_placeholder()
+            print(x, ". Done", sep="")
+    
     # Charge la miniature par défaut
     def load_placeholder(self) -> QPixmap:
         photo_pixmap = QPixmap("icons/placeholder-square.jpg")
@@ -153,4 +166,3 @@ class CentralView(QWidget):
 
         if button and datas.get_current_serie() == id_serie:
             button.setIcon(icon)#_thumbnail(pixmap)
-    
