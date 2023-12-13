@@ -53,6 +53,8 @@ class ThumbnailLoader(QRunnable):
     def load_thumbnail(self, path: str) -> QPixmap:
         photo_pixmap = QPixmap(self.serie_path + path)
 
+        # TODO : Si la photo ne charge pas, l'enlève des photos
+
         #On rend d'abord la photo en temps que carré 1024x1024px (ici, on ne fait que la réduire en taille pour que son plus petit coté fasse 1024px)
         photo_pixmap_overscaled = photo_pixmap.scaled(1024, 1024, aspectRatioMode=Qt.KeepAspectRatioByExpanding)
 

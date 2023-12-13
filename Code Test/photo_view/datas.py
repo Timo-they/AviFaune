@@ -86,7 +86,10 @@ def add_serie(path: str):
     series_[str(max_id+1)] = path
     print(COLOR_BLACK, "Data new series ", series_, COLOR_RESET)
 
-    set_current_serie(str(max_id+1))
+    # set_current_serie(str(max_id+1))
+
+    get_widget("serie_view").update()
+    get_widget("menu_bar_handler").update()
 
     datas_loader_saver.save_datas()
 
@@ -199,6 +202,7 @@ def set_current_photo(new_photo: str):
     get_widget("central_view_photo").update()
     get_widget("menu_bar_handler").update()
     get_widget("stat_view").update()
+    get_widget("central_photo").update_boxes()
 
 
 # SPECIES
@@ -220,6 +224,10 @@ species_: dict = {}
 def get_species():
     return BASE_SPECIES | species_ | {"-1": "Autre"}
 
+
+def get_specie_name(id_specie: str):
+    return get_species()[id_specie]
+
 def set_species(new_species: dict):
     global datas_loader_saver, species_
     last_species = get_species()
@@ -228,6 +236,7 @@ def set_species(new_species: dict):
     print(COLOR_BLACK, "Data setting species from ", last_species, " to ", get_species(), COLOR_RESET)
 
     get_widget("stat_view").update()
+    get_widget("menu_bar_handler").update()
 
     datas_loader_saver.save_datas()
 
@@ -245,6 +254,7 @@ def add_specie(new_specie: str):
     print(COLOR_BLACK, "Data new species ", get_species(), COLOR_RESET)
 
     get_widget("stat_view").update()
+    get_widget("menu_bar_handler").update()
 
     datas_loader_saver.save_datas()
 
@@ -255,6 +265,7 @@ def remove_specie(id_specie: str):
     del species_[id_specie]
 
     get_widget("stat_view").update()
+    get_widget("menu_bar_handler").update()
 
     # TODO : Remove all stats that uses that specie
     
@@ -271,10 +282,16 @@ stats_: dict = {}
 #     #ID of serie
 #     "0": {
 #         "global": {
-#             "0": "1"  #ID of specie
+#             "0": "1"  #ID of specie -> number of oizos
 #         },
-#         "pingouin.png": {
-#             "3": "0"
+#         "pingouin.png": { # Nom image
+#             "-1": { # ID box
+#               "specie": "2"
+#               "x": "165", # Coordinates box
+#               "y": "35",
+#               "w": "55",
+#               "h": "250"
+#               }
 #         }
 #     }
 #}
@@ -285,17 +302,33 @@ def get_stats():
 def get_stats_serie():
     stats = stats_.get(current_serie_)
     if stats == None:
+        print("There is no stats for the serie ", current_serie_)
         return {}
     
     return stats
 
-def get_stats_photo():
+def get_stats_global_serie():
     serie_stats = stats_.get(current_serie_)
     if serie_stats == None:
+        print("There is no stats for the serie ", current_serie_)
         return {}
     
-    stats = serie_stats.get(current_photo_)
+    stats = serie_stats.get("global")
     if stats == None:
+        print("There is no global stats for the serie")
+        return {}
+    
+    return stats
+
+def get_boxes_current_photo():
+    serie_stats = stats_.get(current_serie_)
+    if serie_stats == None:
+        print("There is no stats for the serie ", current_serie_)
+        return {}
+    
+    stats = serie_stats.get(photos_[current_photo_])
+    if stats == None:
+        print("There is no stat for the photo ", photos_[current_photo_])
         return {}
     
     return stats
@@ -309,36 +342,87 @@ def set_stats(new_stats: dict):
 
     datas_loader_saver.save_datas()
 
-def set_serie_stat(id_serie: str, id_specie: str, count: str):
-    global datas_loader_saver
-    print(COLOR_BRIGHT_MAGENTA, "Data setting stat for serie ", id_serie, ", has ", count, " of specie ", id_specie, COLOR_RESET)
+# def set_global_serie_stat(id_serie: str, id_specie: str, count: str):
+#     global datas_loader_saver
+#     print(COLOR_BRIGHT_MAGENTA, "Data setting stat for serie ", id_serie, ", has ", count, " of specie ", id_specie, COLOR_RESET)
 
-    stats_[id_serie]["global"] = count
+#     stats_[id_serie]["global"] = count
 
-    get_widget("stat_view").update()
+#     get_widget("stat_view").update()
 
-    datas_loader_saver.save_datas()
+#     datas_loader_saver.save_datas()
 
-def set_photo_stat(id_serie: str, id_photo: str, id_specie: str, count : str):
-    global datas_loader_saver
-    print(COLOR_BRIGHT_MAGENTA, "Data adding stat for the photo ", id_photo, " of serie ", id_serie, ", has ", count, " of specie ", id_specie, COLOR_RESET)
+# def set_photo_stat(id_serie: str, id_photo: str, id_specie: str, count : str):
+#     global datas_loader_saver
+#     print(COLOR_BRIGHT_MAGENTA, "Data adding stat for the photo ", id_photo, " of serie ", id_serie, ", has ", count, " of specie ", id_specie, COLOR_RESET)
 
-    stats_[id_serie][photos_[id_photo]][id_specie] = count
+#     serie_stats = stats_.get(current_serie_)
+#     if serie_stats == None:
+#         print("There is no stats for the serie ", current_serie_)
+#         return {}
     
-    # TODO: Recalculate stat of the whole serie
+#     stats = serie_stats.get(current_photo_)
+#     if stats == None:
+#         print("There is no stat for the photo ", current_photo_)
+#         return {}
+    
+#     stats_[id_serie][photos_[id_photo]][id_specie] = count
+    
+#     # TODO: Recalculate stat of the whole serie
+#     print("TODO : Recalculate stats of the whole serie")
+
+#     get_widget("stat_view").update()
+
+#     datas_loader_saver.save_datas()
+
+
+def add_box_current_photo(id_specie: str, x: str, y: str, w: str, h: str):
+    global datas_loader_saver
+    print(COLOR_BRIGHT_MAGENTA, "Data adding box for photo ", current_photo_, " : ", id_specie, x, y, w, h, COLOR_RESET)
+
+    if not stats_.get(current_serie_):
+        stats_[current_serie_] = {}
+    
+    if not stats_[current_serie_].get(photos_[current_photo_]):
+        stats_[current_serie_][photos_[current_photo_]] = {}
+
+    max_id = 0
+
+    for id in stats_[current_serie_][photos_[current_photo_]].keys():
+        if int(id) > max_id:
+            max_id = int(id)
+    
+    print(COLOR_BRIGHT_MAGENTA, "Data adding box ", id_specie, x, y, w, h, " as ", max_id+1, COLOR_RESET)
+
+    stats_[current_serie_][photos_[current_photo_]][str(max_id)] = {
+        "specie": str(id_specie),
+        "x": str(x),
+        "y": str(y),
+        "w": str(w),
+        "h": str(h)
+    }
+    
+    calculate_serie_stats()
 
     get_widget("stat_view").update()
+    get_widget("central_photo").update_boxes()
 
     datas_loader_saver.save_datas()
 
-def remove_stat_photo(id_serie: str, id_photo: str):
+def remove_stats_current_photo():
     global datas_loader_saver
-    print(COLOR_BRIGHT_MAGENTA, "Data removing stat for the photo ", id_photo, " of serie ", id_serie, COLOR_RESET)
+    print(COLOR_BRIGHT_MAGENTA, "Data removing stats for the photo ", current_photo_, " of serie ", current_serie_, COLOR_RESET)
 
-    del stats_[id_serie][photos_[id_photo]]
+    if stats_.get(current_serie_) and stats_[current_serie_].get(photos_[current_photo_]):
+        del stats_[current_serie_][photos_[current_photo_]]
 
-    # TODO: Recalculate stat of the whole serie
+    calculate_serie_stats()
 
     get_widget("stat_view").update()
+    get_widget("central_photo").update_boxes()
     
     datas_loader_saver.save_datas()
+
+def calculate_serie_stats():
+    # TODO: Recalculate stat of the whole serie
+    print("TODO : Recalculate stats of the whole serie")

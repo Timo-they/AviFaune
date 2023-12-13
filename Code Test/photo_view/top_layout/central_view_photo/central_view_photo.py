@@ -72,12 +72,9 @@ class CentralViewPhoto(QWidget):
         print("Opening photo for middle ", datas.get_current_photo_full_path()) 
         self.title_label.setText(datas.get_current_photo_name())
 
-        photo_pixmap = QPixmap(datas.get_current_photo_full_path())
+        photo_pixmap: QPixmap = QPixmap(datas.get_current_photo_full_path())
         self.center_image.set_pixmap(photo_pixmap)
     
     # Retourne à la vue de série
     def go_back_to_series(self):
         datas.set_current_photo("")
-    
-    def set_boxes(self, boxes):
-        pass

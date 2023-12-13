@@ -40,7 +40,7 @@ QMenuBar::item:selected {
 }
 
 QMenuBar::item:disabled {
-    /* Couleur de fond des menu inaccessibles (ex: Photo quand on est dans photo) */
+    /* Couleur du texte des menu inaccessibles (ex: Photo quand on est dans photo) */
     color: #888;
 }
 
@@ -53,6 +53,12 @@ QMenu::item:selected {
     /* Couleur de fond de l'option de menu sélectionnée */
     background-color: #1e212c;
 }
+
+QMenu::item:disabled {
+    /* Couleur du texte de l'option de menu sélectionnée */
+    color: #888;
+}
+
 
         /**** Les boutons en général ****/
 

@@ -11,17 +11,21 @@ import datas
 
 class Cadre(QLabel):
 
-    def __init__(self, specie, shape, qlabel, pixmap):
+    def __init__(self, specie, x, y, w, h, qlabel, pixmap):
         super().__init__(qlabel)
 
         self.specie = str(int(specie))
-        self.x, self.y, self.w, self.h = shape
+        self.x, self.y, self.w, self.h = x, y, w, h
         self.x, self.y, self.w, self.h = int(self.x), int(self.y), int(self.w), int(self.h)
 
         self.qlabel = qlabel
         self.pixmap = pixmap
 
+        # TODO : Set cadre color depending on specie
+        print("TODO : Set cadre color depending on specie")
+        
         self.setObjectName("cadre")
+        self.setToolTip(datas.get_specie_name(self.specie))
         self.resize()
     
     def resize(self):

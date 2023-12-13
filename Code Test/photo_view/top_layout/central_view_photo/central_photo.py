@@ -74,14 +74,26 @@ class CentralPhoto(QWidget):
         
         self.cadres = []
     
-    def set_boxes(self, boxes_classes, boxes_shapes):
-        # On enlève tous les cadres de la photo
+    def update_boxes(self):
+        print("Updating central photo boxes, to ", datas.get_boxes_current_photo())
         self.remove_cadres()
-        
-        for i in range(len(boxes_shapes)):
-            cadre = Cadre(boxes_classes[i], boxes_shapes[i], self.qlabel, self.qlabel.pixmap())
+
+        for id, data in datas.get_boxes_current_photo().items():
+            specie, x, y, w, h = data["specie"], data["x"], data["y"], data["w"], data["h"]
+
+            print("Showing box ", specie, x, y, w, h)
+
+            cadre = Cadre(specie, x, y, w, h, self.qlabel, self.qlabel.pixmap())
             cadre.show()
             self.cadres.append(cadre)
 
 
+    # def set_boxes(self, boxes_classes, boxes_shapes):
+    #     # On enlève tous les cadres de la photo
+    #     self.remove_cadres()
         
+    #     for i in range(len(boxes_shapes)):
+    #         cadre = Cadre(boxes_classes[i], boxes_shapes[i], self.qlabel, self.qlabel.pixmap())
+    #         cadre.show()
+    #         self.cadres.append(cadre)
+

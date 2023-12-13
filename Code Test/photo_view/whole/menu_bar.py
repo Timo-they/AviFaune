@@ -29,16 +29,18 @@ class MenuBarHandler():
         oizo_window = datas.get_widget("oizo_window")
 
         # Le menu de Fichier
-        self.open_folder_as_serie_action = QAction("Ajouter un dossier", oizo_window)
+        self.open_folder_as_serie_action = QAction("Ajouter une série", oizo_window)
         # TODO : Voir si on met des tooltips pour chacun...
         self.open_folder_as_serie_action.setToolTip("Ajoute un dossier en tant que série")
         self.create_remove_serie_actions()
-        self.export_global_stats_action = QAction("Exporter les statistiques", oizo_window)
         self.close_app_action = QAction("Fermer l'application", oizo_window)
+
+        # Le menu Exporter
+        self.export_global_stats_action = QAction("Tout exporter", oizo_window)
+        self.export_serie_stats_action = QAction("Exporter les statistiques de la série", oizo_window)
 
         # Le menu de Série
         self.auto_detect_whole_serie_action = QAction("Effectuer la détection d'oiseaux sur la série", oizo_window)
-        self.export_serie_stats_action = QAction("Exporter les statistiques de la série", oizo_window)
         self.remove_serie_action = QAction("Enlever la série", oizo_window)
         self.close_serie_action = QAction("Fermer la série", oizo_window)
 
@@ -49,7 +51,7 @@ class MenuBarHandler():
 
         # Le menu d'Espèces
         self.add_specie_action = QAction("Ajouter une nouvelle espèce d'oiseaux", oizo_window)
-        self.remove_specie_action = QAction("Enlever une espèce d'oiseaux", oizo_window)
+        self.create_remove_specie_actions()
         self.change_specie_color_action = QAction("Changer la couleur d'une espèce", oizo_window)
 
     # Ca c'est pour qu'on ai un bouton de suppression pour chaque série
@@ -62,17 +64,33 @@ class MenuBarHandler():
             action.setToolTip(path)
             action.triggered.connect(partial(self.remove_serie, id, path))
             self.remove_serie_actions.append(action)
+    
+    def create_remove_specie_actions(self):
+        oizo_window = datas.get_widget("oizo_window")
+        self.remove_specie_actions = []
+
+        for id, nom in datas.get_species().items():
+            action = QAction(nom, oizo_window)
+            action.setToolTip(nom)
+
+            if id in datas.BASE_SPECIES.keys() or id == "-1":
+                action.setDisabled(True)
+
+            action.triggered.connect(partial(self.remove_specie, id, nom))
+            self.remove_specie_actions.append(action)
 
     # On connecte toutes les actions à leur fonction associée
     def connect_actions(self):
         # Le menu de Fichier
         self.open_folder_as_serie_action.triggered.connect(self.open_folder_as_serie)
-        self.export_global_stats_action.triggered.connect(self.export_global_stats)
         self.close_app_action.triggered.connect(self.close_app)
+
+        # Le menu exporter
+        self.export_global_stats_action.triggered.connect(self.export_global_stats)
+        self.export_serie_stats_action.triggered.connect(self.export_serie_stats)
 
         # Le menu de Série
         self.auto_detect_whole_serie_action.triggered.connect(self.auto_detect_whole_serie)
-        self.export_serie_stats_action.triggered.connect(self.export_serie_stats)
         self.remove_serie_action.triggered.connect(self.remove_current_serie)
         self.close_serie_action.triggered.connect(self.close_serie)
 
@@ -83,7 +101,6 @@ class MenuBarHandler():
 
         # Le menu d'Especes
         self.add_specie_action.triggered.connect(self.add_specie)
-        self.remove_specie_action.triggered.connect(self.remove_specie)
         self.change_specie_color_action.triggered.connect(self.change_specie_color)
 
     # Finalement on construit tout le menu
@@ -100,8 +117,15 @@ class MenuBarHandler():
         self.menu_fichier_remove_serie.setToolTipsVisible(True)
         for action in self.remove_serie_actions:
             self.menu_fichier_remove_serie.addAction(action)
-        self.menu_fichier.addAction(self.export_global_stats_action)
+        #self.menu_fichier.addAction(self.export_global_stats_action)
         self.menu_fichier.addAction(self.close_app_action)
+
+        # Le menu Exporter
+        self.menu_export: QMenu = menu_bar.addMenu("Exporter")
+        self.menu_export.setToolTipsVisible(True)
+
+        self.menu_export.addAction(self.export_global_stats_action)
+        self.menu_export.addAction(self.export_serie_stats_action)
 
         # Le menu de Série
         self.menu_serie: QMenu = menu_bar.addMenu("Série")
@@ -109,7 +133,7 @@ class MenuBarHandler():
         self.menu_serie.setEnabled(False)
 
         self.menu_serie.addAction(self.auto_detect_whole_serie_action)
-        self.menu_serie.addAction(self.export_serie_stats_action)
+        #self.menu_serie.addAction(self.export_serie_stats_action)
         self.menu_serie.addAction(self.remove_serie_action)
         self.menu_serie.addAction(self.close_serie_action)
 
@@ -127,7 +151,10 @@ class MenuBarHandler():
         self.menu_especes.setToolTipsVisible(True)
 
         self.menu_especes.addAction(self.add_specie_action)
-        self.menu_especes.addAction(self.remove_specie_action)
+        self.remove_specie_menu: QMenu = self.menu_especes.addMenu("Enlever une espèce")
+        self.remove_specie_menu.setToolTipsVisible(True)
+        for action in self.remove_specie_actions:
+            self.remove_specie_menu.addAction(action)
         self.menu_especes.addAction(self.change_specie_color_action)
 
     #Quand la série actuelle ou la photo actuelle ou la liste des séries changent
@@ -139,9 +166,14 @@ class MenuBarHandler():
         # Met à jour les séries qu'on peut supprimer
         self.menu_fichier_remove_serie.clear()
         self.create_remove_serie_actions()
+        self.remove_specie_menu.clear()
+        self.create_remove_specie_actions()
 
         for action in self.remove_serie_actions:
             self.menu_fichier_remove_serie.addAction(action)
+        
+        for action in self.remove_specie_actions:
+            self.remove_specie_menu.addAction(action)
     
 
     ### FICHIER ###
@@ -223,23 +255,25 @@ class MenuBarHandler():
         #   3: Mouette Rieuse
         #   4: Pluvier Argenté
 
+        datas.remove_stats_current_photo()
+        print("Detecting oizooos on ", datas.get_current_photo_full_path())
+
         if self.model == None:
+            print("Loading YOLO Model... May take a while...")
             self.model = YOLO("whole/best.pt")
         
         prediction = self.model.predict(datas.get_current_photo_full_path(), save=True)
 
         boxes_classes = prediction[0].boxes.cls.cpu()
         boxes_shapes = prediction[0].boxes.xywh.cpu()
-        print(boxes_classes, boxes_shapes)
+        print("Predicted : ", boxes_classes, boxes_shapes)
 
-        # TODO : set stats directly when autodetect
-        print("TODO : set stats directly when autodetect")
-
-        datas.get_widget("central_photo").set_boxes(boxes_classes, boxes_shapes)
+        for i in range(len(boxes_shapes)):
+            class_, shape = boxes_classes[i], boxes_shapes[i]
+            datas.add_box_current_photo(int(class_), int(shape[0]), int(shape[1]), int(shape[2]), int(shape[3]))
 
     def remove_detect_photo(self):
-        # TODO : Remove stats from photo
-        print("TODO : Remove stats from photo")
+        datas.remove_stats_current_photo()
 
     def close_photo(self):
         datas.set_current_photo("")
@@ -259,10 +293,9 @@ class MenuBarHandler():
         
         else:
             print("Specie adding aborted")
-    
-    def remove_specie(self):
-        # TODO : Add menu to remove specie
-        print("TODO : Add menu to remove specie")
+
+    def remove_specie(self, id, nom):
+        datas.remove_specie(id)
     
     def change_specie_color(self):
         # TODO : Add menu to change the color of a specie
