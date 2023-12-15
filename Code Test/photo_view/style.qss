@@ -59,6 +59,10 @@ QMenu::item:disabled {
     color: #888;
 }
 
+QMenu::separator {
+    background: #55eeeeee;
+    margin: 10px;
+}
 
         /**** Les boutons en général ****/
 
@@ -170,4 +174,3 @@ QSpinBox, QLineEdit {
 QSpinBox:disabled {
     background: #13304d;
 }
-

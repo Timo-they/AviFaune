@@ -269,7 +269,7 @@ class MenuBarHandler():
 
         for i in range(len(boxes_shapes)):
             class_, shape, prob = boxes_classes[i], boxes_shapes[i], boxes_probs[i]
-            datas.add_box_photo(id_photo, int(class_), int(shape[0]), int(shape[1]), int(shape[2]), int(shape[3]), round(float(prob), 2))
+            datas.add_box_photo(id_photo, int(class_), int(shape[0]) - int(float(shape[2])/2), int(shape[1]) - int(float(shape[3])/2), int(shape[2]), int(shape[3]), round(float(prob), 2))
 
     def remove_detect_photo(self):
         datas.remove_stats_current_photo()

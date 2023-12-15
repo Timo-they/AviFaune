@@ -32,11 +32,16 @@ class CentralButton(QToolButton):
         self.label.setGeometry(12, 14, 15, 15)
         self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
+        # Il n'y a pas de cadre encore pour cette photo
         if not path in datas.get_stats_serie().keys():
             self.label.setVisible(False)
+
+        # Il y a des cadres dans cette photo
         else:
-            self.label.setText(str(list(datas.get_stats_serie().keys()).count(self.path)))
-            # self.label.setText("1000")
+            # On affiche le nombre de cadres qu'il y a dessus
+            stats = datas.get_stats_serie()[path]
+            count = len(stats)
+            self.label.setText(str(count))
 
         self.installEventFilter(self)
 
@@ -53,8 +58,13 @@ class CentralButton(QToolButton):
         return False
     
     def check_has_box(self):
-        if self.path in datas.get_stats_serie().keys():
-            self.label.setText(str(list(datas.get_stats_serie().keys()).count(self.path)))
-            self.label.setVisible(True)
-        else:
+        # Il n'y a pas de cadre encore pour cette photo
+        if not self.path in datas.get_stats_serie().keys():
             self.label.setVisible(False)
+
+        # Il y a des cadres dans cette photo
+        else:
+            # On affiche le nombre de cadres qu'il y a dessus
+            stats = datas.get_stats_serie()[self.path]
+            count = len(stats)
+            self.label.setText(str(count))

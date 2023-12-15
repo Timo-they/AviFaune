@@ -1,36 +1,33 @@
 
 
 
-import typing
+from functools import partial
+
 from PyQt5 import QtGui
 from PyQt5.QtCore import QEvent, QObject, Qt
-from PyQt5.QtWidgets import QWidget, QLabel, QApplication
+from PyQt5.QtWidgets import QWidget, QLabel, QApplication, QMenu, QAction
+from PyQt5.QtGui import QCursor
 
 import datas
 
 
 class Cadre(QLabel):
 
-    def __init__(self, specie, x, y, w, h, prob, qlabel, pixmap):
+    def __init__(self, id_box, specie, x, y, w, h, prob, qlabel, pixmap):
         super().__init__(qlabel)
 
-        self.last_x = 0
-        self.last_y = 0
         self.resizing_anchor = ""
 
+        self.id_box = id_box
         self.specie = str(int(specie))
-        self.x, self.y, self.w, self.h = x, y, w, h
-        self.x, self.y, self.w, self.h = int(self.x), int(self.y), int(self.w), int(self.h)
+        self.x_photo, self.y_photo, self.w, self.h = int(x), int(y), int(w), int(h)
+        #self.x_photo, self.y_photo = int(self.x_photo - self.w/2), int(self.y_photo - self.h/2)
 
         self.qlabel = qlabel
         self.pixmap = pixmap
 
         self.label = QLabel(datas.get_specie_name(specie) + " " + prob, self)
         self.label.setObjectName("cadre_label")
-
-        # self.label = QLabel(self)
-        # self.label.setText("5")
-        # self.label.move(10, 10)
 
         # TODO : Set cadre color depending on specie
         print("TODO : Set cadre color depending on specie")
@@ -43,8 +40,7 @@ class Cadre(QLabel):
         self.installEventFilter(self)
     
     def resize(self):
-        x, y, w, h = self.x, self.y, self.w, self.h
-        x, y, w, h = int(x), int(y), int(w), int(h)
+        x, y, w, h = self.x_photo, self.y_photo, self.w, self.h
 
         # print("Box : ", x, y, w, h)
 
@@ -58,8 +54,8 @@ class Cadre(QLabel):
         pixmap_height = self.pixmap.height()
         # print("QPixmap : ", pixmap_width, pixmap_height)
 
-        cadre_x = int((x - w/2) * qlabel_width / pixmap_width)
-        cadre_y = int((y - h/2) * qlabel_height / pixmap_height)
+        cadre_x = int(x * qlabel_width / pixmap_width)
+        cadre_y = int(y * qlabel_height / pixmap_height)
         cadre_width = int(w * qlabel_width / pixmap_width)
         cadre_height = int(h * qlabel_height / pixmap_height)
         
@@ -215,16 +211,9 @@ class Cadre(QLabel):
                 "126": "QEvent::ZOrderChange", }
         # print(event_lookup[str(event.type())])
         
-        handle_zone_size = 10
-        qlabel_width = self.qlabel.width()
-        qlabel_height = self.qlabel.height()
-        # print("QLabel : ", qlabel_x, qlabel_y ,qlabel_width, qlabel_height)
+        handle_zone_size = 5
 
-        pixmap_width = self.pixmap.width()
-        pixmap_height = self.pixmap.height()
-        # print("QPixmap : ", pixmap_width, pixmap_height)
-
-        if event.type() == QEvent.HoverMove and not datas.get_widget("central_photo").resizing:
+        if (event.type() == QEvent.HoverMove or event.type() == QEvent.HoverEnter) and not datas.get_widget("central_photo").resizing and datas.get_widget("central_photo").cadre_mode == "resize":
             #print(event.pos())
             x = event.pos().x()
             y = event.pos().y()
@@ -281,54 +270,41 @@ class Cadre(QLabel):
                     self.resizing_anchor = "mid"
 
             return False
+        
+        if event.type() == QEvent.HoverLeave and not datas.get_widget("central_photo").resizing and datas.get_widget("central_photo").cadre_mode == "resize":
+            QApplication.restoreOverrideCursor()
 
         elif event.type() == QEvent.MouseButtonPress:
-            datas.get_widget("central_photo").resizing = self
-            self.end_x = self.x + self.w
-            self.end_y = self.y + self.h
+            if event.button() == Qt.LeftButton and datas.get_widget("central_photo").cadre_mode == "resize":
+                self.end_x_photo = self.x_photo + self.w
+                self.end_y_photo = self.y_photo + self.h
+                datas.get_widget("central_photo").resizing = self
+            
+            elif event.button() == Qt.RightButton and datas.get_widget("central_photo").cadre_mode == "normal":
+                menu = QMenu(self)
+
+                for id, specie in datas.get_species().items():
+                    change_specie_action = QAction(specie, self)
+                    change_specie_action.triggered.connect(partial(self.change_specie_box, self.id_box, id))
+                    menu.addAction(change_specie_action)
+
+                menu.addSeparator()
+
+                delete_oizo_action = QAction("Supprimer l'oiseau", self)
+                delete_oizo_action.triggered.connect(partial(self.delete_oizo_box, self.id_box))
+                menu.addAction(delete_oizo_action)
+
+                menu.popup(QCursor.pos())
         
-        elif event.type() == QEvent.MouseButtonRelease:
-            datas.get_widget("central_photo").resizing = None
-
-        # elif event.type() == QEvent.MouseMove and datas.get_widget("central_photo").resizing:
-        #     x = event.x()
-        #     y = event.y()
-
-        #     print(x, y, self.resizing_anchor)
-
-        #     match self.resizing_anchor:
-        #         case "left_top":
-        #             self.x = self.initial_x + x * pixmap_width / qlabel_width
-        #             self.y = self.initial_y + y * pixmap_height / qlabel_height
-        #             # self.x += (x - self.last_x) * qlabel_width / pixmap_width
-        #             # self.y += (y - self.last_y) * qlabel_height / pixmap_height
-        #             # self.w += - (x - self.last_x)  * qlabel_width / pixmap_width
-        #             # self.h += - (y - self.last_y) * qlabel_height / pixmap_height
-        #             self.resize()
-
-        #         case "left_bot":
-        #             pass
-
-        #         case "left_mid":
-        #             pass
-            
-        #         case "right_top":
-        #             pass
-
-        #         case "right_bot":
-        #             pass
-
-        #         case "right_mid":
-        #             pass
-
-        #         case "mid_top":
-        #             pass
-
-        #         case "mid_bot":
-        #             pass
-                
-        #         case "":
-        #             pass
-            
+        elif event.type() == QEvent.MouseButtonRelease and datas.get_widget("central_photo").cadre_mode == "resize":
+            if event.button() == Qt.LeftButton:
+                datas.get_widget("central_photo").resizing = None
+                datas.get_widget("central_photo").offset = None
 
         return super().eventFilter(object, event)
+    
+    def change_specie_box(self, id_box, id_specie):
+        datas.update_specie_box_photo(id_box, id_specie)
+    
+    def delete_oizo_box(self, id_box):
+        datas.delete_box_photo(id_box)

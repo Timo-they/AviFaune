@@ -4,7 +4,7 @@
 
 import typing
 from PyQt5 import QtGui
-from PyQt5.QtWidgets import QWidget, QLabel, QSizePolicy, QApplication
+from PyQt5.QtWidgets import QWidget, QLabel, QSizePolicy, QApplication, QPushButton
 from PyQt5.QtCore import QObject, QEvent, Qt
 
 import datas
@@ -23,8 +23,9 @@ class CentralPhoto(QWidget):
         datas.set_widget("central_photo", self)
 
         self.cadres = []
-        self.cadre_mode = ""
-        # Can be : "hover", "resize", "add", "edit_specie", "delete"
+        self.cadre_mode = "normal"
+        # Can be : "normal", "resize", "add", "delete"
+        self.offset = None
 
         # If currently resizing a cadre
         self.resizing = False
@@ -39,8 +40,45 @@ class CentralPhoto(QWidget):
         self.qlabel.setMouseTracking(True)
         self.qlabel.installEventFilter(self)
         
+        offset = 10
+        self.toolbutton_none = QPushButton("Normal", self)
+        self.toolbutton_none.installEventFilter(self)
+        self.toolbutton_none.move(offset, offset)
+        self.toolbutton_none.pressed.connect(self.normal_mode)
+        self.toolbutton_none.setDisabled(True)
+
+        self.toolbutton_resize = QPushButton("Resize", self)
+        self.toolbutton_resize.installEventFilter(self)
+        self.toolbutton_resize.move(offset*2 + self.toolbutton_none.width(), offset)
+        self.toolbutton_resize.pressed.connect(self.resize_mode)
+
+        self.toolbutton_add = QPushButton("Add", self)
+        self.toolbutton_add.move(self.toolbutton_resize.x() + offset + self.toolbutton_resize.width(), offset)
+        self.toolbutton_add.pressed.connect(self.add_mode)
+        
         self.installEventFilter(self)
     
+    def normal_mode(self):
+        self.toolbutton_none.setDisabled(True)
+        self.toolbutton_resize.setDisabled(False)
+        self.toolbutton_add.setDisabled(False)
+        self.cadre_mode = "normal"
+        self.resizing = None
+    
+    def resize_mode(self):
+        self.toolbutton_none.setDisabled(False)
+        self.toolbutton_resize.setDisabled(True)
+        self.toolbutton_add.setDisabled(False)
+        self.cadre_mode = "resize"
+        self.resizing = None
+    
+    def add_mode(self):
+        self.toolbutton_none.setDisabled(False)
+        self.toolbutton_resize.setDisabled(False)
+        self.toolbutton_add.setDisabled(True)
+        self.cadre_mode = "add"
+        self.resizing = None
+
     # Quand la fenêtre est resize
     def eventFilter(self, object: QObject, event: QEvent) -> bool:
         event_lookup = {"0": "QEvent::None",
@@ -189,49 +227,165 @@ class CentralPhoto(QWidget):
                 "104": "QEvent::WindowUnblocked",
                 "203": "QEvent::WinIdChange",
                 "126": "QEvent::ZOrderChange", }
-        # print(event_lookup[str(event.type())], object)
+        # print(event_lookup[str(event.type())])
+        min_cadre_size = 10
 
-        if object == self and event.type() == QEvent.Resize and not self.qlabel.pixmap() == None:
+        if (object == self.toolbutton_none or object == self.toolbutton_resize or object == self.toolbutton_add) and event.type() == QEvent.Resize:
+            offset = 10
+            self.toolbutton_none.move(offset, offset)
+            self.toolbutton_resize.move(offset*2 + self.toolbutton_none.width(), offset)
+            self.toolbutton_add.move(self.toolbutton_resize.x() + offset + self.toolbutton_resize.width(), offset)
+        
+        elif object == self and event.type() == QEvent.Resize and not self.qlabel.pixmap() == None:
             self.resize()
 
-        elif object == self.qlabel and event.type() == QEvent.MouseMove and not self.resizing:
+        elif object == self.qlabel and (event.type() == QEvent.MouseMove or event.type() == QEvent.Enter) and self.cadre_mode == "add" and not self.resizing:
             QApplication.setOverrideCursor(Qt.CrossCursor)
         
-        elif object == self.qlabel and event.type() == QEvent.MouseMove and self.resizing:
-            x = event.x()
-            y = event.y()
-            print(x, y, self.resizing.end_x)
-            # cadre_x = int((x - w/2) * qlabel_width / pixmap_width)
-            # cadre_y = int((y - h/2) * qlabel_height / pixmap_height)
-            # cadre_width = int(w * qlabel_width / pixmap_width)
-            # cadre_height = int(h * qlabel_height / pixmap_height)
-            # self.resizing.x = int(x  * self.qlabel.pixmap().width() / self.qlabel.width() + self.resizing.w/2)
-            # self.resizing.y = int(y  * self.qlabel.pixmap().height() / self.qlabel.height() + self.resizing.h/2)
-            # self.resizing.w = (self.resizing.end_x - self.resizing.x) 
-            # self.resizing.h += (last_y - self.resizing.y) * self.qlabel.pixmap().height() / self.qlabel.height()
-            # self.resizing.resize()
+        elif object == self.qlabel and event.type() == QEvent.Leave and self.cadre_mode == "add":
+            QApplication.restoreOverrideCursor()
+
+            if self.resizing:
+                self.resizing == None
+        
+        elif object == self.qlabel and event.type() == QEvent.MouseMove and self.resizing and (self.cadre_mode == "resize" or self.cadre_mode == "add"):
+            mouse_screen_x = event.x()
+            mouse_screen_y = event.y()
+
+            # print(mouse_screen_x, mouse_screen_y, self.resizing.end_x_photo)
 
             match self.resizing.resizing_anchor:
                 case "left_top":
                     QApplication.setOverrideCursor(Qt.SizeFDiagCursor)
+                    self.resizing.x_photo = int(self.screen_to_photo(mouse_screen_x))
+                    self.resizing.w = int(self.resizing.end_x_photo - self.resizing.x_photo)
+                    self.resizing.y_photo = int(self.screen_to_photo(mouse_screen_y))
+                    self.resizing.h = int(self.resizing.end_y_photo - self.resizing.y_photo)
+
                 case "left_bot":
                     QApplication.setOverrideCursor(Qt.SizeBDiagCursor)
+                    self.resizing.x_photo = int(self.screen_to_photo(mouse_screen_x))
+                    self.resizing.w = int(self.resizing.end_x_photo - self.resizing.x_photo)
+                    self.resizing.h = int(self.screen_to_photo(mouse_screen_y) - self.resizing.y_photo)
+
                 case "left_mid":
                     QApplication.setOverrideCursor(Qt.SizeHorCursor)
+                    self.resizing.x_photo = int(self.screen_to_photo(mouse_screen_x))
+                    self.resizing.w = int(self.resizing.end_x_photo - self.resizing.x_photo)
+
                 case "right_top":
                     QApplication.setOverrideCursor(Qt.SizeBDiagCursor)
+                    self.resizing.w = int(self.screen_to_photo(mouse_screen_x) - self.resizing.x_photo)
+                    self.resizing.y_photo = int(self.screen_to_photo(mouse_screen_y))
+                    self.resizing.h = int(self.resizing.end_y_photo - self.resizing.y_photo)
+
                 case "right_bot":
                     QApplication.setOverrideCursor(Qt.SizeFDiagCursor)
+                    self.resizing.w = int(self.screen_to_photo(mouse_screen_x) - self.resizing.x_photo)
+                    self.resizing.h = int(self.screen_to_photo(mouse_screen_y) - self.resizing.y_photo)
+
                 case "right_mid":
                     QApplication.setOverrideCursor(Qt.SizeHorCursor)
+                    self.resizing.w = int(self.screen_to_photo(mouse_screen_x) - self.resizing.x_photo)
+
                 case "mid_top":
                     QApplication.setOverrideCursor(Qt.SizeVerCursor)
+                    self.resizing.y_photo = int(self.screen_to_photo(mouse_screen_y))
+                    self.resizing.h = int(self.resizing.end_y_photo - self.resizing.y_photo)
+
                 case "mid_bot":
                     QApplication.setOverrideCursor(Qt.SizeVerCursor)
+                    self.resizing.h = int(self.screen_to_photo(mouse_screen_y) - self.resizing.y_photo)
+
                 case "mid":
                     QApplication.setOverrideCursor(Qt.SizeAllCursor)
+                    if self.offset == None:
+                        self.offset = (self.photo_to_screen(self.resizing.x_photo) - mouse_screen_x, self.photo_to_screen(self.resizing.y_photo) - mouse_screen_y)
+                    
+                    else:
+                        self.resizing.x_photo = int(self.screen_to_photo(mouse_screen_x + self.offset[0]))
+                        self.resizing.y_photo = int(self.screen_to_photo(mouse_screen_y + self.offset[1]))
+            
+            if self.resizing.resizing_anchor == "mid":
+                if self.resizing.x_photo < 0:
+                    self.resizing.x_photo = 0
+                elif self.resizing.x_photo > self.qlabel.pixmap().width() - self.resizing.w:
+                    self.resizing.x_photo = int(self.qlabel.pixmap().width() - self.resizing.w)
+                
+                if self.resizing.y_photo < 0:
+                    self.resizing.y_photo = 0
+                elif self.resizing.y_photo > self.qlabel.pixmap().height() - self.resizing.h:
+                    self.resizing.y_photo = int(self.qlabel.pixmap().height() - self.resizing.h)
+                
+
+            else:
+                if self.resizing.x_photo < 0:
+                    self.resizing.x_photo = 0
+                elif self.resizing.x_photo > self.qlabel.pixmap().width() - min_cadre_size:
+                    self.resizing.x_photo = int(self.qlabel.pixmap().width() - min_cadre_size)
+                
+                if self.resizing.y_photo < 0:
+                    self.resizing.y_photo = 0
+                elif self.resizing.y_photo > self.qlabel.pixmap().height() - min_cadre_size:
+                    self.resizing.y_photo = int(self.qlabel.pixmap().height() - min_cadre_size)
+                
+                if self.resizing.w < min_cadre_size:
+                    self.resizing.w = min_cadre_size
+                elif self.resizing.w > self.qlabel.pixmap().width() - self.resizing.x_photo:
+                    self.resizing.w = self.qlabel.pixmap().width() - self.resizing.x_photo
+                
+                if self.resizing.h < min_cadre_size:
+                    self.resizing.h = min_cadre_size
+                elif self.resizing.h > self.qlabel.pixmap().height() - self.resizing.y_photo:
+                    self.resizing.h = self.qlabel.pixmap().height() - self.resizing.y_photo
+            
+            datas.update_pos_box_photo(
+                self.resizing.id_box,
+                self.resizing.x_photo,
+                self.resizing.y_photo,
+                self.resizing.w,
+                self.resizing.h
+            )
+
+            self.resizing.resize()
+        
+        elif object == self.qlabel and event.type() == QEvent.MouseButtonPress:
+            if event.button() == Qt.LeftButton and self.cadre_mode == "add" and not self.resizing:
+                print("Clicked to initialize add cadre", event.x(), event.y())
+
+                x = str(int(self.screen_to_photo(event.x())))
+                y = str(int(self.screen_to_photo(event.y())))
+                w = "10"
+                h = "10"
+                specie = "0"
+
+                print(w, y, w, h, specie)
+
+                id_box = datas.add_box_photo(datas.get_current_photo(), specie, x, y, w, h, "1.0")
+                cadre = Cadre(id_box, specie, x, y, w, h, "1.0", self.qlabel, self.qlabel.pixmap())
+                
+                self.resizing = cadre
+                cadre.resizing_anchor = "right_bot"
+                cadre.end_x_photo = self.screen_to_photo(event.x()) + 10
+                cadre.end_y_photo = self.screen_to_photo(event.y()) + 10
+                cadre.show()
+                self.cadres.append(cadre)
+                QApplication.setOverrideCursor(Qt.SizeFDiagCursor)
+        
+        elif object == self.qlabel and event.type() == QEvent.MouseButtonRelease:
+            if event.button() == Qt.LeftButton and self.cadre_mode == "add":
+                self.resizing = None
+                QApplication.restoreOverrideCursor()
+                
+                print("Released the newly added cadre")
 
         return super().eventFilter(object, event)
+
+    def photo_to_screen(self, coord_photo: int):
+        return coord_photo * self.qlabel.width() / self.qlabel.pixmap().width()
+    
+    def screen_to_photo(self, coord_screen: int):
+        return coord_screen * self.qlabel.pixmap().width() / self.qlabel.width()
 
     # On centre l'image sur le QWidget
     def resize(self):
@@ -265,6 +419,7 @@ class CentralPhoto(QWidget):
         self.qlabel.setPixmap(photo_pixmap)
         self.resize()
         self.remove_cadres()
+        self.resizing = None
     
     def remove_cadres(self):
         for cadre in self.cadres:
@@ -273,6 +428,7 @@ class CentralPhoto(QWidget):
         self.cadres = []
     
     def update_boxes(self):
+        self.resizing = None
         self.remove_cadres()
 
         if datas.get_current_photo() == "":
@@ -287,7 +443,7 @@ class CentralPhoto(QWidget):
 
             print("Showing box ", specie, x, y, w, h, prob)
 
-            cadre = Cadre(specie, x, y, w, h, prob, self.qlabel, self.qlabel.pixmap())
+            cadre = Cadre(id, specie, x, y, w, h, prob, self.qlabel, self.qlabel.pixmap())
             cadre.show()
             self.cadres.append(cadre)
 

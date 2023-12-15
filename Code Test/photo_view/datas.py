@@ -311,7 +311,8 @@ stats_: dict = {}
 #               "x": "165", # Coordinates box
 #               "y": "35",
 #               "w": "55",
-#               "h": "250"
+#               "h": "250",
+#               "prob": "0.52"
 #               }
 #         }
 #     }
@@ -446,6 +447,138 @@ def add_box_photo(id_photo: str, id_specie: str, x: str, y: str, w: str, h: str,
         "prob": str(prob)
     }
     
+    calculate_serie_stats()
+
+    get_widget("stat_view").update()
+    get_widget("central_photo").update_boxes()
+    get_widget("central_view").updated_stats()
+
+    datas_loader_saver.save_datas()
+
+    return str(max_id+1)
+
+def update_specie_box_photo(id_box: str, new_id_specie: str):
+    global datas_loader_saver
+    print(COLOR_BRIGHT_MAGENTA, "Data changing box, ", id_box, ", update specie to ", new_id_specie, COLOR_RESET)
+
+    serie_stats = stats_.get(current_serie_)
+    if serie_stats == None:
+        print(COLOR_BRIGHT_RED, "10. There is no stats for the serie ", current_serie_, COLOR_RESET)
+        return
+
+    if photos_.get(current_photo_) == None:
+        print(COLOR_BRIGHT_RED, "11. There is no ", current_photo_, " in ", photos_, COLOR_RESET)
+        return
+
+    stats = serie_stats.get(photos_[current_photo_])
+    if stats == None:
+        print(COLOR_BRIGHT_RED, "12. There is no stat for the photo ", photos_[current_photo_], COLOR_RESET)
+        return
+    
+    stat_box = stats_[current_serie_][photos_[current_photo_]].get(id_box)
+    if stat_box == None:
+        print(COLOR_BRIGHT_RED, "12. There is no stat for the box ", id_box, COLOR_RESET)
+        return
+
+    stats_[current_serie_][photos_[current_photo_]][id_box]["specie"] = new_id_specie
+    
+    calculate_serie_stats()
+
+    get_widget("stat_view").update()
+    get_widget("central_photo").update_boxes()
+    get_widget("central_view").updated_stats()
+
+    datas_loader_saver.save_datas()
+
+def update_pos_box_photo(id_box: str, x: str, y: str, w: str, h: str):
+    global datas_loader_saver
+    print(COLOR_BRIGHT_MAGENTA, "Data changing box, ", id_box, ", update prob to ", x, y, w, h, COLOR_RESET)
+
+    serie_stats = stats_.get(current_serie_)
+    if serie_stats == None:
+        print(COLOR_BRIGHT_RED, "10. There is no stats for the serie ", current_serie_, COLOR_RESET)
+        return
+
+    if photos_.get(current_photo_) == None:
+        print(COLOR_BRIGHT_RED, "11. There is no ", current_photo_, " in ", photos_, COLOR_RESET)
+        return
+
+    stats = serie_stats.get(photos_[current_photo_])
+    if stats == None:
+        print(COLOR_BRIGHT_RED, "12. There is no stat for the photo ", photos_[current_photo_], COLOR_RESET)
+        return
+    
+    stat_box = stats_[current_serie_][photos_[current_photo_]].get(id_box)
+    if stat_box == None:
+        print(COLOR_BRIGHT_RED, "12. There is no stat for the box ", id_box, COLOR_RESET)
+        return
+
+    stats_[current_serie_][photos_[current_photo_]][id_box]["x"] = str(x)
+    stats_[current_serie_][photos_[current_photo_]][id_box]["y"] = str(y)
+    stats_[current_serie_][photos_[current_photo_]][id_box]["w"] = str(w)
+    stats_[current_serie_][photos_[current_photo_]][id_box]["h"] = str(h)
+
+    #get_widget("stat_view").update()
+    #get_widget("central_photo").update_boxes()
+    #get_widget("central_view").updated_stats()
+
+    datas_loader_saver.save_datas()
+
+def update_prob_box_photo(id_box: str, new_prob: str):
+    global datas_loader_saver
+    print(COLOR_BRIGHT_MAGENTA, "Data changing box, ", id_box, ", update prob to ", new_prob, COLOR_RESET)
+
+    serie_stats = stats_.get(current_serie_)
+    if serie_stats == None:
+        print(COLOR_BRIGHT_RED, "10. There is no stats for the serie ", current_serie_, COLOR_RESET)
+        return
+
+    if photos_.get(current_photo_) == None:
+        print(COLOR_BRIGHT_RED, "11. There is no ", current_photo_, " in ", photos_, COLOR_RESET)
+        return
+
+    stats = serie_stats.get(photos_[current_photo_])
+    if stats == None:
+        print(COLOR_BRIGHT_RED, "12. There is no stat for the photo ", photos_[current_photo_], COLOR_RESET)
+        return
+    
+    stat_box = stats_[current_serie_][photos_[current_photo_]].get(id_box)
+    if stat_box == None:
+        print(COLOR_BRIGHT_RED, "12. There is no stat for the box ", id_box, COLOR_RESET)
+        return
+
+    stats_[current_serie_][photos_[current_photo_]][id_box]["prob"] = new_prob
+
+    get_widget("stat_view").update()
+    get_widget("central_photo").update_boxes()
+    get_widget("central_view").updated_stats()
+
+    datas_loader_saver.save_datas()
+
+def delete_box_photo(id_box: str):
+    global datas_loader_saver
+    print(COLOR_BRIGHT_MAGENTA, "Data deleting box, ", id_box, COLOR_RESET)
+
+    serie_stats = stats_.get(current_serie_)
+    if serie_stats == None:
+        print(COLOR_BRIGHT_RED, "10. There is no stats for the serie ", current_serie_, COLOR_RESET)
+        return
+
+    if photos_.get(current_photo_) == None:
+        print(COLOR_BRIGHT_RED, "11. There is no ", current_photo_, " in ", photos_, COLOR_RESET)
+        return
+
+    stats = serie_stats.get(photos_[current_photo_])
+    if stats == None:
+        print(COLOR_BRIGHT_RED, "12. There is no stat for the photo ", photos_[current_photo_], COLOR_RESET)
+        return
+    
+    stat_box = stats_[current_serie_][photos_[current_photo_]].get(id_box)
+    if stat_box == None:
+        print(COLOR_BRIGHT_RED, "12. There is no stat for the box ", id_box, COLOR_RESET)
+        return
+
+    del stats_[current_serie_][photos_[current_photo_]][id_box]
     calculate_serie_stats()
 
     get_widget("stat_view").update()
