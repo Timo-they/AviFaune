@@ -67,6 +67,7 @@ class CentralButton(QToolButton):
         # Il y a des cadres dans cette photo
         else:
             # On affiche le nombre de cadres qu'il y a dessus
+            self.label.setVisible(True)
             stats = datas.get_stats_serie()[self.path]
             count = len(stats)
             self.label.setText(" " + str(count) + " ")

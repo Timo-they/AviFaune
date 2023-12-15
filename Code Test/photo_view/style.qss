@@ -149,9 +149,8 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal, QScrollBar::ad
 }
 
 #little_cadre {
-    border: 2px solid red;
-    background: #99ff0000;
-
+    border: 2px solid #cc3333;
+    background: #99cc3333;
 }
 
 QSpinBox, QLineEdit {

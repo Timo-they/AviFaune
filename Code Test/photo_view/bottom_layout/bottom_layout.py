@@ -153,6 +153,10 @@ class BottomLayout(QHBoxLayout):
         
         # TODO : Scroll so that the thumbnail is in the center of the scrollbar
     
+    def updated_stats(self):
+        for button in self.thumbnail_buttons.values():
+            button.check_has_box()
+    
     # Charge la miniature par défaut
     def load_placeholder(self) -> QPixmap:
         photo_pixmap = QPixmap("icons/placeholder-square.jpg")
@@ -210,7 +214,7 @@ class BottomLayout(QHBoxLayout):
         
         elif photo == "" or len(photos_ids) == 0:
             return
-        
+
         if photos_ids.index(photo) <= 0:
             return
 

@@ -160,6 +160,7 @@ def set_current_serie(new_serie: str):
     get_widget("central_view").update()
     get_widget("menu_bar_handler").update()
     get_widget("stat_view").update()
+    get_widget("central_photo").cadre_mode = "normal"
 
 
 # PHOTOS
@@ -371,6 +372,7 @@ def set_stats(new_stats: dict):
 
     get_widget("stat_view").update()
     get_widget("central_view").updated_stats()
+    get_widget("bottom_layout").updated_stats()
 
     datas_loader_saver.save_datas()
 
@@ -418,6 +420,7 @@ def set_stats_global_serie(stats: dict):
 
     get_widget("stat_view").update()
     get_widget("central_view").updated_stats()
+    get_widget("bottom_layout").updated_stats()
 
     datas_loader_saver.save_datas()
 
@@ -457,6 +460,7 @@ def add_box_photo(id_photo: str, id_specie: str, x: str, y: str, w: str, h: str,
     get_widget("stat_view").update()
     get_widget("central_photo").update_boxes()
     get_widget("central_view").updated_stats()
+    get_widget("bottom_layout").updated_stats()
 
     datas_loader_saver.save_datas()
 
@@ -492,6 +496,7 @@ def update_specie_box_photo(id_box: str, new_id_specie: str):
     get_widget("stat_view").update()
     get_widget("central_photo").update_boxes()
     get_widget("central_view").updated_stats()
+    get_widget("bottom_layout").updated_stats()
 
     datas_loader_saver.save_datas()
 
@@ -526,6 +531,7 @@ def update_pos_box_photo(id_box: str, x: str, y: str, w: str, h: str):
     #get_widget("stat_view").update()
     #get_widget("central_photo").update_boxes()
     #get_widget("central_view").updated_stats()
+    # get_widget("bottom_layout").updated_stats()
 
     datas_loader_saver.save_datas()
 
@@ -557,6 +563,7 @@ def update_prob_box_photo(id_box: str, new_prob: str):
     get_widget("stat_view").update()
     get_widget("central_photo").update_boxes()
     get_widget("central_view").updated_stats()
+    get_widget("bottom_layout").updated_stats()
 
     datas_loader_saver.save_datas()
 
@@ -589,6 +596,7 @@ def delete_box_photo(id_box: str):
     get_widget("stat_view").update()
     get_widget("central_photo").update_boxes()
     get_widget("central_view").updated_stats()
+    get_widget("bottom_layout").updated_stats()
 
     datas_loader_saver.save_datas()
 
@@ -612,6 +620,7 @@ def remove_stats_current_photo(id_photo_to_remove_stats = None):
     get_widget("stat_view").update()
     get_widget("central_photo").update_boxes()
     get_widget("central_view").updated_stats()
+    get_widget("bottom_layout").updated_stats()
     
     datas_loader_saver.save_datas()
 
