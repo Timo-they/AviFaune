@@ -448,13 +448,3 @@ class CentralPhoto(QWidget):
             cadre.show()
             self.cadres.append(cadre)
 
-
-    # def set_boxes(self, boxes_classes, boxes_shapes):
-    #     # On enlève tous les cadres de la photo
-    #     self.remove_cadres()
-        
-    #     for i in range(len(boxes_shapes)):
-    #         cadre = Cadre(boxes_classes[i], boxes_shapes[i], self.qlabel, self.qlabel.pixmap())
-    #         cadre.show()
-    #         self.cadres.append(cadre)
-

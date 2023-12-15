@@ -300,6 +300,7 @@ class Cadre(QLabel):
         
         elif event.type() == QEvent.MouseButtonRelease and datas.get_widget("central_photo").cadre_mode == "resize":
             if event.button() == Qt.LeftButton:
+                QApplication.restoreOverrideCursor()
                 datas.get_widget("central_photo").resizing = None
                 datas.get_widget("central_photo").offset = None
 
