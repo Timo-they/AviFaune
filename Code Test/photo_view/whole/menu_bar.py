@@ -136,7 +136,7 @@ class MenuBarHandler():
         self.remove_specie_menu.setToolTipsVisible(True)
         for action in self.remove_specie_actions:
             self.remove_specie_menu.addAction(action)
-        self.menu_especes.addAction(self.change_specie_color_action)
+        #self.menu_especes.addAction(self.change_specie_color_action)
 
     #Quand la série actuelle ou la photo actuelle ou la liste des séries changent
     def update(self):
@@ -261,7 +261,7 @@ class MenuBarHandler():
             print("Loading YOLO Model... May take a while...")
             self.model = YOLO("whole/best.pt")
         
-        prediction = self.model.predict(photo_full_path, save=True)
+        prediction = self.model.predict(photo_full_path, save=False)
 
         boxes_classes = prediction[0].boxes.cls.cpu()
         boxes_shapes = prediction[0].boxes.xywh.cpu()
@@ -282,8 +282,6 @@ class MenuBarHandler():
 
     def add_specie(self):
         oizo_window = datas.get_widget("oizo_window")
-        # TODO : Dialog to add specie
-        print("TODO : Dialog to add specie")
         text, ok = QInputDialog.getText(oizo_window, "Ajout d'une espèce", "Saisis le nom de l'espèce que tu souhaite rajouter à l'application : ")
 
         if ok and text != "":

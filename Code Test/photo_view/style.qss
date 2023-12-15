@@ -148,19 +148,6 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal, QScrollBar::ad
     width: 0px;
 }
 
-#cadre {
-    border: 2px solid red;
-}
-
-#cadre:hover {
-    background: #22ff0000;
-}
-
-#cadre_label {
-    padding: 2px;
-    background-color: #aaff0000;
-}
-
 #little_cadre {
     border: 2px solid red;
     background: #99ff0000;

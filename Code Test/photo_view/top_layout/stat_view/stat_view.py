@@ -141,6 +141,7 @@ class StatView(QWidget):
                 box.addWidget(label)
 
                 spin = QSpinBox()
+                spin.setStyleSheet("background: #" + datas.get_color_specie(id))
                 spin.setDisabled(True)
 
                 specie_stat = species_stats.get(id)
@@ -180,6 +181,7 @@ class StatView(QWidget):
                         spin.setValue(spin.value() + 1)
                 
                 spin.setDisabled(True)
+                spin.setStyleSheet("background: #" + datas.get_color_specie(id))
 
                 box.addWidget(spin)
 

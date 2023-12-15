@@ -32,6 +32,8 @@ class Cadre(QLabel):
         # TODO : Set cadre color depending on specie
         print("TODO : Set cadre color depending on specie")
 
+        self.setStyleSheet("#cadre {border: 2px solid #" + datas.get_color_specie(self.specie) + ";} #cadre:hover { background: #22" + datas.get_color_specie(self.specie) + ";} #cadre_label {padding: 2px;background-color: #aa" + datas.get_color_specie(self.specie) + ";}")
+
         self.setObjectName("cadre")
         self.setToolTip(datas.get_specie_name(specie) + " " + prob)
         self.resize()
@@ -280,7 +282,7 @@ class Cadre(QLabel):
                 self.end_y_photo = self.y_photo + self.h
                 datas.get_widget("central_photo").resizing = self
             
-            elif event.button() == Qt.RightButton and datas.get_widget("central_photo").cadre_mode == "normal":
+            elif event.button() == Qt.RightButton and (datas.get_widget("central_photo").cadre_mode == "normal" or datas.get_widget("central_photo").cadre_mode == "resize"):
                 menu = QMenu(self)
 
                 for id, specie in datas.get_species().items():

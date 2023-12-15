@@ -44,7 +44,9 @@ class OizoWindow(QMainWindow):
         window_layout.addLayout(bottom_layout, 1)
 
         self.setCentralWidget(window_widget)
-        
+
+        self.setFocusPolicy(Qt.ClickFocus)
+        self.setFocusProxy(self)
         self.installEventFilter(self)
 
     def eventFilter(self, a0: QObject | None, event: QEvent) -> bool:

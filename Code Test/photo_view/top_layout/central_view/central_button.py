@@ -29,7 +29,8 @@ class CentralButton(QToolButton):
         
         self.label = QLabel(self)
         self.label.setObjectName("little_cadre")
-        self.label.setGeometry(12, 14, 15, 15)
+        self.label.move(12, 14)
+        #self.label.setGeometry(12, 14, 15, 15)
         self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         # Il n'y a pas de cadre encore pour cette photo
@@ -41,7 +42,8 @@ class CentralButton(QToolButton):
             # On affiche le nombre de cadres qu'il y a dessus
             stats = datas.get_stats_serie()[path]
             count = len(stats)
-            self.label.setText(str(count))
+            self.label.setText(" " + str(count) + " ")
+            #self.label.setText("100000")
 
         self.installEventFilter(self)
 
@@ -67,4 +69,5 @@ class CentralButton(QToolButton):
             # On affiche le nombre de cadres qu'il y a dessus
             stats = datas.get_stats_serie()[self.path]
             count = len(stats)
-            self.label.setText(str(count))
+            self.label.setText(" " + str(count) + " ")
+            #self.label.setText("100000")

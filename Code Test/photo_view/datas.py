@@ -240,6 +240,8 @@ BASE_SPECIES: dict = {
 species_: dict = {}
 # "-1" is for "Autre" category
 
+COLOR_SPECIES = ["F94144", "F3722C", "F8961E", "F9844A", "F9C74F", "90BE6D", "43AA8B", "4D908E", "577590", "277DA1"]
+
 def get_species():
     return BASE_SPECIES | species_ | {"-1": "Autre"}
 
@@ -248,6 +250,9 @@ def get_only_newly_added_species():
 
 def get_specie_name(id_specie: str):
     return get_species()[id_specie]
+
+def get_color_specie(id_specie: str):
+    return COLOR_SPECIES[int(id_specie) % len(COLOR_SPECIES)]
 
 def set_species(new_species: dict):
     global datas_loader_saver, species_

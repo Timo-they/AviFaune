@@ -40,7 +40,7 @@ class CentralPhoto(QWidget):
         self.qlabel.setMouseTracking(True)
         self.qlabel.installEventFilter(self)
         
-        offset = 10
+        offset = 5
         self.toolbutton_none = QPushButton("Normal", self)
         self.toolbutton_none.installEventFilter(self)
         self.toolbutton_none.move(offset, offset)
@@ -56,6 +56,7 @@ class CentralPhoto(QWidget):
         self.toolbutton_add.move(self.toolbutton_resize.x() + offset + self.toolbutton_resize.width(), offset)
         self.toolbutton_add.pressed.connect(self.add_mode)
         
+        self.setFocusPolicy(Qt.ClickFocus)
         self.installEventFilter(self)
     
     def normal_mode(self):
@@ -362,17 +363,17 @@ class CentralPhoto(QWidget):
                 print(w, y, w, h, specie)
 
                 id_box = datas.add_box_photo(datas.get_current_photo(), specie, x, y, w, h, "1.0")
-                cadre = Cadre(id_box, specie, x, y, w, h, "1.0", self.qlabel, self.qlabel.pixmap())
+
+                for cadre in self.cadres:
+                    if cadre.id_box == id_box:
+                        self.resizing = cadre
+                        cadre.resizing_anchor = "right_bot"
+                        cadre.end_x_photo = self.screen_to_photo(event.x()) + 10
+                        cadre.end_y_photo = self.screen_to_photo(event.y()) + 10
                 
-                self.resizing = cadre
-                cadre.resizing_anchor = "right_bot"
-                cadre.end_x_photo = self.screen_to_photo(event.x()) + 10
-                cadre.end_y_photo = self.screen_to_photo(event.y()) + 10
-                cadre.show()
-                self.cadres.append(cadre)
                 QApplication.setOverrideCursor(Qt.SizeFDiagCursor)
         
-        elif object == self.qlabel and event.type() == QEvent.MouseButtonRelease:
+        elif event.type() == QEvent.MouseButtonRelease:
             if event.button() == Qt.LeftButton and self.cadre_mode == "add":
                 self.resizing = None
                 QApplication.restoreOverrideCursor()
