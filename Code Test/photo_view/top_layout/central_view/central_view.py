@@ -48,6 +48,7 @@ class CentralView(QWidget):
 
         # Le titre de la vue
         self.title_label = QLabel("Aucune série sélectionnée")
+        self.title_label.setWordWrap(True)
         self.view_box.addWidget(self.title_label)
 
         # La barre séparatrice
@@ -136,6 +137,10 @@ class CentralView(QWidget):
         # self.thumnbnail_loader_thread.start()
         # print(datas.COLOR_BRIGHT_YELLOW, "end", datas.COLOR_RESET)
 
+    def updated_stats(self):
+        for button in self.thumbnail_buttons.values():
+            button.check_has_box()
+    
     def a(self):
         for x in range(50):
             self.load_placeholder()

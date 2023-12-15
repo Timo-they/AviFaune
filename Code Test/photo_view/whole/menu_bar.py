@@ -39,15 +39,11 @@ class MenuBarHandler():
         self.export_global_stats_action = QAction("Tout exporter", oizo_window)
         self.export_serie_stats_action = QAction("Exporter les statistiques de la série", oizo_window)
 
-        # Le menu de Série
+        # Le menu de Détection d'oiseaux
         self.auto_detect_whole_serie_action = QAction("Effectuer la détection d'oiseaux sur la série", oizo_window)
-        self.remove_serie_action = QAction("Enlever la série", oizo_window)
-        self.close_serie_action = QAction("Fermer la série", oizo_window)
-
-        # Le menu de Photo
+        self.remove_detect_whole_serie_action = QAction("Réinitialiser la détection d'oiseaux sur la série", oizo_window)
         self.auto_detect_photo_action = QAction("Effectuer la détection d'oiseaux sur la photo", oizo_window)
         self.remove_detect_photo_action = QAction("Réinitialiser la détection d'oiseaux sur la photo", oizo_window)
-        self.close_photo_action = QAction("Fermer la photo", oizo_window)
 
         # Le menu d'Espèces
         self.add_specie_action = QAction("Ajouter une nouvelle espèce d'oiseaux", oizo_window)
@@ -89,15 +85,11 @@ class MenuBarHandler():
         self.export_global_stats_action.triggered.connect(self.export_global_stats)
         self.export_serie_stats_action.triggered.connect(self.export_serie_stats)
 
-        # Le menu de Série
+        # Le menu de Détection d'oiseaux
         self.auto_detect_whole_serie_action.triggered.connect(self.auto_detect_whole_serie)
-        self.remove_serie_action.triggered.connect(self.remove_current_serie)
-        self.close_serie_action.triggered.connect(self.close_serie)
-
-        # Le menu de Photo
+        self.remove_detect_whole_serie_action.triggered.connect(self.remove_detect_whole_serie)
         self.auto_detect_photo_action.triggered.connect(self.auto_detect_photo)
         self.remove_detect_photo_action.triggered.connect(self.remove_detect_photo)
-        self.close_photo_action.triggered.connect(self.close_photo)
 
         # Le menu d'Especes
         self.add_specie_action.triggered.connect(self.add_specie)
@@ -117,7 +109,6 @@ class MenuBarHandler():
         self.menu_fichier_remove_serie.setToolTipsVisible(True)
         for action in self.remove_serie_actions:
             self.menu_fichier_remove_serie.addAction(action)
-        #self.menu_fichier.addAction(self.export_global_stats_action)
         self.menu_fichier.addAction(self.close_app_action)
 
         # Le menu Exporter
@@ -127,24 +118,14 @@ class MenuBarHandler():
         self.menu_export.addAction(self.export_global_stats_action)
         self.menu_export.addAction(self.export_serie_stats_action)
 
-        # Le menu de Série
-        self.menu_serie: QMenu = menu_bar.addMenu("Série")
-        self.menu_serie.setToolTipsVisible(True)
-        self.menu_serie.setEnabled(False)
+        # Le menu de Détection d'oiseaux
+        self.menu_detection: QMenu = menu_bar.addMenu("Détection d'oiseaux")
+        self.menu_detection.setToolTipsVisible(True)
 
-        self.menu_serie.addAction(self.auto_detect_whole_serie_action)
-        #self.menu_serie.addAction(self.export_serie_stats_action)
-        self.menu_serie.addAction(self.remove_serie_action)
-        self.menu_serie.addAction(self.close_serie_action)
-
-        # Le menu de Photo
-        self.menu_photo: QMenu = menu_bar.addMenu("Photo")
-        self.menu_photo.setToolTipsVisible(True)
-        self.menu_photo.setEnabled(False)
-
-        self.menu_photo.addAction(self.auto_detect_photo_action)
-        self.menu_photo.addAction(self.remove_detect_photo_action)
-        self.menu_photo.addAction(self.close_photo_action)
+        self.menu_detection.addAction(self.auto_detect_whole_serie_action)
+        self.menu_detection.addAction(self.remove_detect_whole_serie_action)
+        self.menu_detection.addAction(self.auto_detect_photo_action)
+        self.menu_detection.addAction(self.remove_detect_photo_action)
 
         # Le menu d'Espèces
         self.menu_especes: QMenu = menu_bar.addMenu("Espèces")
@@ -159,10 +140,15 @@ class MenuBarHandler():
 
     #Quand la série actuelle ou la photo actuelle ou la liste des séries changent
     def update(self):
-        # Met à jour l'accès aux menus Série et Photo
-        self.menu_serie.setEnabled(datas.get_current_serie() != "")
-        self.menu_photo.setEnabled(datas.get_current_photo() != "")
+        # Met à jour l'export de série
+        self.export_serie_stats_action.setDisabled(datas.get_current_serie() == "")
 
+        # Met à jour l'accès aux actions de détecction
+        self.auto_detect_whole_serie_action.setDisabled(datas.get_current_serie() == "")
+        self.remove_detect_whole_serie_action.setDisabled(datas.get_current_serie() == "")
+        self.auto_detect_photo_action.setDisabled(datas.get_current_photo() == "")
+        self.remove_detect_photo_action.setDisabled(datas.get_current_photo() == "")
+        
         # Met à jour les séries qu'on peut supprimer
         self.menu_fichier_remove_serie.clear()
         self.create_remove_serie_actions()
@@ -230,14 +216,18 @@ class MenuBarHandler():
     ### SERIE ###
 
     def auto_detect_whole_serie(self):
-        # TODO : Generate stats for every photo of the serie
-        print("TODO : Generate stats for every photo of the serie")
+        for id, nom in datas.get_photos().items():
+            self.auto_detect_photo(id, datas.get_current_photo_full_path(id))
 
     def export_serie_stats(self):
         # TODO : Open File dialog to choose save path
         # TODO : Save stats at given path as CSV File
         print("TODO : Open File dialog to choose save path")
         print("TODO : Save stats at given path as CSV File")
+
+    def remove_detect_whole_serie(self):
+        for id, nom in datas.get_photos().items():
+            datas.remove_stats_current_photo(id)
 
     def remove_current_serie(self):
         self.remove_serie(datas.get_current_serie(), datas.get_current_serie_path())
@@ -248,29 +238,38 @@ class MenuBarHandler():
 
     ### PHOTO ####
 
-    def auto_detect_photo(self):
+    def auto_detect_photo(self, id_photo = None, photo_full_path = None):
         #   0: Bécasseau Sanderling
         #   1: Bernache Cravant
         #   2: Goéland Argenté
         #   3: Mouette Rieuse
         #   4: Pluvier Argenté
 
-        datas.remove_stats_current_photo()
-        print("Detecting oizooos on ", datas.get_current_photo_full_path())
+        if not photo_full_path:
+            photo_full_path = datas.get_current_photo_full_path()
+        
+        if not id_photo:
+            id_photo = datas.get_current_photo()
+        
+        if id_photo == "":
+            print(datas.COLOR_BRIGHT_RED, "Hmmm, it seems detecting on no photo won't work ", id_photo, photo_full_path, datas.COLOR_RESET)
+
+        datas.remove_stats_current_photo(id_photo)
+        print("Detecting oizooos on ", photo_full_path)
 
         if self.model == None:
             print("Loading YOLO Model... May take a while...")
             self.model = YOLO("whole/best.pt")
         
-        prediction = self.model.predict(datas.get_current_photo_full_path(), save=True)
+        prediction = self.model.predict(photo_full_path, save=True)
 
         boxes_classes = prediction[0].boxes.cls.cpu()
         boxes_shapes = prediction[0].boxes.xywh.cpu()
-        print("Predicted : ", boxes_classes, boxes_shapes)
+        boxes_probs = prediction[0].boxes.conf.cpu()
 
         for i in range(len(boxes_shapes)):
-            class_, shape = boxes_classes[i], boxes_shapes[i]
-            datas.add_box_current_photo(int(class_), int(shape[0]), int(shape[1]), int(shape[2]), int(shape[3]))
+            class_, shape, prob = boxes_classes[i], boxes_shapes[i], boxes_probs[i]
+            datas.add_box_photo(id_photo, int(class_), int(shape[0]), int(shape[1]), int(shape[2]), int(shape[3]), round(float(prob), 2))
 
     def remove_detect_photo(self):
         datas.remove_stats_current_photo()

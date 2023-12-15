@@ -40,7 +40,7 @@ class ScrollAreaBottom(QScrollArea):
 
     def resize(self):
         if self.horizontalScrollBar().isVisible():
-            self.widget.setFixedHeight(self.height() - 8)
+            self.widget.setMaximumHeight(self.height() - 8)
         else:
-            self.widget.setFixedHeight(self.height())
+            self.widget.setMaximumHeight(self.height())
         

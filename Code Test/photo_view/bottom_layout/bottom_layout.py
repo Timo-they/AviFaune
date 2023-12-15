@@ -176,13 +176,19 @@ class BottomLayout(QHBoxLayout):
     def go_to_next_photo(self):
         if datas.get_current_serie() == "":
             return
-
+    
         photo = datas.get_current_photo()
         photos_ids: list = list(datas.get_photos().keys())
-
+        
         if photo == "" and len(photos_ids) > 0:
             print(datas.get_photos(), photos_ids[0])
             datas.set_current_photo(photos_ids[0])
+            return
+        
+        elif photo == "" or len(photos_ids) == 0:
+            return
+        
+        if photos_ids.index(photo) >= len(photos_ids)-1:
             return
 
         new_photo = photos_ids[photos_ids.index(photo) + 1]
@@ -192,13 +198,20 @@ class BottomLayout(QHBoxLayout):
     def go_to_previous_photo(self):
         if datas.get_current_serie() == "":
             return
-        
+    
         photo = datas.get_current_photo()
         photos_ids: list = list(datas.get_photos().keys())
+        
 
         if photo == "" and len(photos_ids) > 0:
             print(datas.get_photos(), photos_ids[0])
             datas.set_current_photo(photos_ids[0])
+            return
+        
+        elif photo == "" or len(photos_ids) == 0:
+            return
+        
+        if photos_ids.index(photo) <= 0:
             return
 
         new_photo = photos_ids[photos_ids.index(photo) - 1]

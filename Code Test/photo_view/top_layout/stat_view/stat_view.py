@@ -13,13 +13,13 @@ from top_layout.stat_view.scroll_area_stat import ScrollAreaStat
 class StatView(QWidget):
 
     box: QVBoxLayout
-    stat_boxes: list
 
     def __init__(self, parent = None):
         super().__init__(parent)
         datas.set_widget("stat_view", self)
 
-        self.stat_boxes = []
+        self.stat_boxes = {}
+        self.fill_widget = None
 
         self.setMinimumWidth(120)
         self.setMaximumWidth(300)
@@ -32,9 +32,9 @@ class StatView(QWidget):
         view_box.setContentsMargins(0, 0, 0, 0)
         
         # Le titre de la vue
-        label = QLabel("Stats")
-        label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        view_box.addWidget(label)
+        self.title_label = QLabel("Stats")
+        self.title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        view_box.addWidget(self.title_label)
 
         # La barre séparatrice
         separator = QFrame()
@@ -53,6 +53,18 @@ class StatView(QWidget):
 
     # Quand la série change ou que la liste des séries change
     def update(self):
+        if datas.get_current_serie() == "":
+            # Rien d'afficher, donc pas de stats
+            self.title_label.setText("Stats")
+
+        elif datas.get_current_photo() == "":
+            # Série affichée
+            self.title_label.setText("Stats de Série")
+
+        else:
+            # Photo affichée
+            self.title_label.setText("Stats de Photo")
+        
         # On supprime tous les boutons de série
         # children = []
         # for i in range(self.stats_list_box.count()):
@@ -98,11 +110,61 @@ class StatView(QWidget):
             
         # for child in self.stat_boxes:
         #     child.widget().deleteLater()
+
+        for stat_box in self.stat_boxes.values():
+            stat_box["spin"].deleteLater()
+            stat_box["label"].deleteLater()
+            del stat_box["box"]
         
-        self.stat_boxes = []
+        if self.fill_widget:
+            self.fill_widget.deleteLater()
+            self.fill_widget = None
+
+        self.stat_boxes = {
+            # "0": { # id_specie
+                # "box": QLayout,
+                # "label": QLabel,
+                # "spin": QSpinBox
+            # }
+        }
         
         #Show serie stats
         if datas.get_current_photo() == "":
+            species_stats = datas.get_stats_global_serie()
+
+            # On réajoute tous les boutons de série
+            for id, name in datas.get_species().items():
+                box = QHBoxLayout()
+
+                label = QLabel(name + " : ")
+                label.setToolTip(name)
+                box.addWidget(label)
+
+                spin = QSpinBox()
+                spin.setDisabled(True)
+
+                specie_stat = species_stats.get(id)
+                if specie_stat:
+                    spin.setValue(int(specie_stat))
+
+                box.addWidget(spin)
+
+                self.stats_list_box.addLayout(box)
+                self.stat_boxes[id] = {
+                    "box": box,
+                    "label": label,
+                    "spin": spin
+                }
+
+            # Euh, ça c'est juste pour éviter certains trucs bizarre
+            self.fill_widget = QWidget()
+            self.stats_list_box.addWidget(self.fill_widget)
+        
+
+        #Show photo stats
+        else:
+            boxes = datas.get_boxes_current_photo()
+
             # On réajoute tous les boutons de série
             for id, name in datas.get_species().items():
                 box = QHBoxLayout()
@@ -113,21 +175,21 @@ class StatView(QWidget):
 
                 spin = QSpinBox()
 
-                if datas.get_current_photo() == "":
-                    spin.setDisabled(True)
-
-                specie_stats = datas.get_stats_serie().get("global")
-                if specie_stats:
-                    specie_stat = specie_stats.get(id)
-
-                    if specie_stat:
-                        spin.setValue(int(specie_stat))
+                for box_ in boxes.values():
+                    if box_["specie"] == id:
+                        spin.setValue(spin.value() + 1)
+                
+                spin.setDisabled(True)
 
                 box.addWidget(spin)
 
                 self.stats_list_box.addLayout(box)
-                self.stat_boxes.append(box)
+                self.stat_boxes[id] = {
+                    "box": box,
+                    "label": label,
+                    "spin": spin
+                }
 
             # Euh, ça c'est juste pour éviter certains trucs bizarre
-            fill_widget = QWidget()
-            self.stats_list_box.addWidget(fill_widget)
+            self.fill_widget = QWidget()
+            self.stats_list_box.addWidget(self.fill_widget)

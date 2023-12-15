@@ -3,6 +3,7 @@
 
 import typing
 from PyQt5 import QtGui
+from PyQt5.QtCore import QEvent, QObject
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
@@ -43,15 +44,28 @@ class OizoWindow(QMainWindow):
         window_layout.addLayout(bottom_layout, 1)
 
         self.setCentralWidget(window_widget)
-
-    def keyPressEvent(self, event: QKeyEvent) -> None:
-        # TODO : Faut que quand on appuie sur les flèches ça change la photo
-
-        if event.key() == Qt.Key_Right:
-            print("RIGHT KEY !")
-            datas.get_widget("bottom_layout").go_to_next_photo()
-
-        elif event.key() == Qt.Key_Left:
-            datas.get_widget("bottom_layout").go_to_previous_photo()
         
-        return super().keyPressEvent(event)
+        self.installEventFilter(self)
+
+    def eventFilter(self, a0: QObject | None, event: QEvent) -> bool:
+        if event.type() == QEvent.KeyPress:
+            if event.key() == Qt.Key_Right:
+                print("RIGHT KEY !")
+                datas.get_widget("bottom_layout").go_to_next_photo()
+
+            elif event.key() == Qt.Key_Left:
+                datas.get_widget("bottom_layout").go_to_previous_photo()
+
+        return super().eventFilter(a0, event)
+
+    # def keyPressEvent(self, event: QKeyEvent) -> None:
+    #     # TODO : Faut que quand on appuie sur les flèches ça change la photo
+
+    #     if event.key() == Qt.Key_Right:
+    #         print("RIGHT KEY !")
+    #         datas.get_widget("bottom_layout").go_to_next_photo()
+
+    #     elif event.key() == Qt.Key_Left:
+    #         datas.get_widget("bottom_layout").go_to_previous_photo()
+        
+    #     return super().keyPressEvent(event)
