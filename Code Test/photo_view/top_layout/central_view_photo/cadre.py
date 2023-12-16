@@ -27,6 +27,7 @@ class Cadre(QLabel):
         self.pixmap = pixmap
 
         self.label = QLabel(datas.get_specie_name(specie) + " " + prob, self)
+        self.label.setAttribute(Qt.WA_TransparentForMouseEvents)
         self.label.setObjectName("cadre_label")
 
         # TODO : Set cadre color depending on specie

@@ -47,7 +47,8 @@ class CentralViewPhoto(QWidget):
         self.hbox.addWidget(self.return_button)
 
         # Titre de la photo
-        self.title_label = QLabel("Aucune série sélectionnée")
+        self.title_label = QLabel("Aucune photo sélectionnée")
+        self.title_label.setWordWrap(True)
         self.title_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.hbox.addWidget(self.title_label)
 

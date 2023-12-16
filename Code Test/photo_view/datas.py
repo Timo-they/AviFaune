@@ -264,6 +264,7 @@ def set_species(new_species: dict):
 
     get_widget("stat_view").update()
     get_widget("menu_bar_handler").update()
+    get_widget("central_photo").update_species()
 
     datas_loader_saver.save_datas()
 
@@ -282,6 +283,7 @@ def add_specie(new_specie: str):
 
     get_widget("stat_view").update()
     get_widget("menu_bar_handler").update()
+    get_widget("central_photo").update_species()
 
     datas_loader_saver.save_datas()
 
@@ -293,6 +295,7 @@ def remove_specie(id_specie: str):
 
     get_widget("stat_view").update()
     get_widget("menu_bar_handler").update()
+    get_widget("central_photo").update_species()
 
     # TODO : Remove all stats that uses that specie
     

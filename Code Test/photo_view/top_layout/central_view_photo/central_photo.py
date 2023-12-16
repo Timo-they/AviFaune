@@ -4,7 +4,7 @@
 
 import typing
 from PyQt5 import QtGui
-from PyQt5.QtWidgets import QWidget, QLabel, QSizePolicy, QApplication, QPushButton
+from PyQt5.QtWidgets import QWidget, QLabel, QSizePolicy, QApplication, QPushButton, QComboBox
 from PyQt5.QtCore import QObject, QEvent, Qt
 
 import datas
@@ -41,20 +41,31 @@ class CentralPhoto(QWidget):
         self.qlabel.installEventFilter(self)
         
         offset = 5
-        self.toolbutton_none = QPushButton("Normal", self)
+        self.toolbutton_none = QPushButton("Survoler", self)
         self.toolbutton_none.installEventFilter(self)
         self.toolbutton_none.move(offset, offset)
         self.toolbutton_none.pressed.connect(self.normal_mode)
         self.toolbutton_none.setDisabled(True)
 
-        self.toolbutton_resize = QPushButton("Resize", self)
+        self.toolbutton_resize = QPushButton("Redimmensionner", self)
         self.toolbutton_resize.installEventFilter(self)
         self.toolbutton_resize.move(offset*2 + self.toolbutton_none.width(), offset)
         self.toolbutton_resize.pressed.connect(self.resize_mode)
 
-        self.toolbutton_add = QPushButton("Add", self)
+        self.toolbutton_add = QPushButton("Ajouter", self)
+        self.toolbutton_add.installEventFilter(self)
         self.toolbutton_add.move(self.toolbutton_resize.x() + offset + self.toolbutton_resize.width(), offset)
         self.toolbutton_add.pressed.connect(self.add_mode)
+
+        self.comboBox = QComboBox(self)
+        for specie in datas.get_species().values():
+            self.comboBox.addItem(specie)
+
+        # Connectez la méthode de gestion d'événements lorsque la sélection change
+        #self.comboBox.currentIndexChanged.connect(self.on_selection_changed)
+        self.comboBox.move(self.toolbutton_add.x() + offset + self.toolbutton_add.width(), offset)
+        self.comboBox.setFixedHeight(self.toolbutton_add.height())
+        self.comboBox.setVisible(False)
         
         self.setFocusPolicy(Qt.ClickFocus)
         self.installEventFilter(self)
@@ -65,6 +76,7 @@ class CentralPhoto(QWidget):
         self.toolbutton_add.setDisabled(False)
         self.cadre_mode = "normal"
         self.resizing = None
+        self.comboBox.setVisible(False)
     
     def resize_mode(self):
         self.toolbutton_none.setDisabled(False)
@@ -72,6 +84,7 @@ class CentralPhoto(QWidget):
         self.toolbutton_add.setDisabled(False)
         self.cadre_mode = "resize"
         self.resizing = None
+        self.comboBox.setVisible(False)
     
     def add_mode(self):
         self.toolbutton_none.setDisabled(False)
@@ -79,6 +92,7 @@ class CentralPhoto(QWidget):
         self.toolbutton_add.setDisabled(True)
         self.cadre_mode = "add"
         self.resizing = None
+        self.comboBox.setVisible(True)
 
     # Quand la fenêtre est resize
     def eventFilter(self, object: QObject, event: QEvent) -> bool:
@@ -229,13 +243,14 @@ class CentralPhoto(QWidget):
                 "203": "QEvent::WinIdChange",
                 "126": "QEvent::ZOrderChange", }
         # print(event_lookup[str(event.type())])
-        min_cadre_size = 10
+        min_cadre_size = 30
 
         if (object == self.toolbutton_none or object == self.toolbutton_resize or object == self.toolbutton_add) and event.type() == QEvent.Resize:
             offset = 10
             self.toolbutton_none.move(offset, offset)
             self.toolbutton_resize.move(offset*2 + self.toolbutton_none.width(), offset)
             self.toolbutton_add.move(self.toolbutton_resize.x() + offset + self.toolbutton_resize.width(), offset)
+            self.comboBox.move(self.toolbutton_add.x() + offset + self.toolbutton_add.width(), offset)
         
         elif object == self and event.type() == QEvent.Resize and not self.qlabel.pixmap() == None:
             self.resize()
@@ -356,9 +371,10 @@ class CentralPhoto(QWidget):
 
                 x = str(int(self.screen_to_photo(event.x())))
                 y = str(int(self.screen_to_photo(event.y())))
-                w = "10"
-                h = "10"
-                specie = "0"
+                w = str(min_cadre_size)
+                h = str(min_cadre_size)
+                ok_specie = [i for i in datas.get_species() if datas.get_species()[i] == self.comboBox.currentText()]
+                specie = "-1" if ok_specie == [] else ok_specie[0]
 
                 print(w, y, w, h, specie)
 
@@ -368,8 +384,8 @@ class CentralPhoto(QWidget):
                     if cadre.id_box == id_box:
                         self.resizing = cadre
                         cadre.resizing_anchor = "right_bot"
-                        cadre.end_x_photo = self.screen_to_photo(event.x()) + 10
-                        cadre.end_y_photo = self.screen_to_photo(event.y()) + 10
+                        cadre.end_x_photo = self.screen_to_photo(event.x()) + min_cadre_size
+                        cadre.end_y_photo = self.screen_to_photo(event.y()) + min_cadre_size
                 
                 QApplication.setOverrideCursor(Qt.SizeFDiagCursor)
         
@@ -447,4 +463,9 @@ class CentralPhoto(QWidget):
             cadre = Cadre(id, specie, x, y, w, h, prob, self.qlabel, self.qlabel.pixmap())
             cadre.show()
             self.cadres.append(cadre)
+    
+    def update_species(self):
+        self.comboBox.clear()
+        for specie in datas.get_species().values():
+            self.comboBox.addItem(specie)
 

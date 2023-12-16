@@ -89,10 +89,16 @@ QPushButton:pressed, QToolButton:pressed {
 }
 
 /* Les boutons désactivés (quand une série ou photo est sélectionnée) */
-QPushButton:disabled, QToolButton:disabled {
+QPushButton:disabled#serie-button, QToolButton:disabled {
     background-color: #318de9;
     margin: 0px;
     border: 3px solid #5aa7f5;
+}
+
+/* Les boutons désactivés (quand une série ou photo est sélectionnée) */
+QPushButton:disabled {
+    background-color: #318de9;
+    
 }
 
 /* Les boutons de navigation en bas désactivés */
@@ -159,4 +165,23 @@ QSpinBox, QLineEdit {
 
 QSpinBox:disabled {
     background: #13304d;
+}
+
+QComboBox {
+    /* Couleur de fond des options de menu */
+    background-color: #0d0f13;
+}
+
+QComboBox::item {
+    /* Couleur de fond de l'option de menu sélectionnée */
+    background-color: #0d0f13;
+}
+QComboBox::item:selected {
+    /* Couleur de fond de l'option de menu sélectionnée */
+    background-color: #1e212c;
+}
+
+QComboBox::item:disabled {
+    /* Couleur du texte de l'option de menu sélectionnée */
+    color: #888;
 }
