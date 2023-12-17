@@ -189,7 +189,7 @@ class MenuBarHandler():
     def remove_serie(self, id: str, path: str):
         print("Asking for deleting serie ", path)
         oizo_window: QMainWindow = datas.get_widget("oizo_window")
-        confirmation = QMessageBox.question(oizo_window, "Enlever la série " + os.path.basename(os.path.dirname(path)), "Est tu certain que tu souhaites enlever la série " + os.path.basename(os.path.dirname(path)) + " ?\nLa série n'apparaitra plus dans la liste de séries, les statistiques liées à la série seront supprimées, mais le dossier associé à la série ne sera pas supprimé.", QMessageBox.Yes | QMessageBox.No)
+        confirmation = QMessageBox.question(oizo_window, "Enlever la série " + os.path.basename(os.path.dirname(path)), "Êtes-vous certain que de vouloir enlever cette série ?" + os.path.basename(os.path.dirname(path)) + " ?\nLa série n'apparaitra plus dans la liste de séries, les statistiques liées à la série seront supprimées, mais le dossier associé à la série ne sera pas supprimé.", QMessageBox.Yes | QMessageBox.No)
 
         if confirmation == QMessageBox.Yes:
             print("Confirmed serie deletion")
