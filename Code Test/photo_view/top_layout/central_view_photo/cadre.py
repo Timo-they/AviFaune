@@ -212,7 +212,7 @@ class Cadre(QLabel):
                 "104": "QEvent::WindowUnblocked",
                 "203": "QEvent::WinIdChange",
                 "126": "QEvent::ZOrderChange", }
-        # print(event_lookup[str(event.type())])
+        print(event_lookup[str(event.type())])
         
         handle_zone_size = 5
 
@@ -272,10 +272,10 @@ class Cadre(QLabel):
                     QApplication.setOverrideCursor(Qt.SizeAllCursor)
                     self.resizing_anchor = "mid"
 
-            return False
+            #return False
         
-        if event.type() == QEvent.HoverLeave and not datas.get_widget("central_photo").resizing and datas.get_widget("central_photo").cadre_mode == "resize":
-            QApplication.restoreOverrideCursor()
+        elif event.type() == QEvent.HoverLeave and not datas.get_widget("central_photo").resizing and datas.get_widget("central_photo").cadre_mode == "resize":
+            QApplication.setOverrideCursor(Qt.ArrowCursor)
 
         elif event.type() == QEvent.MouseButtonPress:
             if event.button() == Qt.LeftButton and datas.get_widget("central_photo").cadre_mode == "resize":
@@ -301,7 +301,7 @@ class Cadre(QLabel):
         
         elif event.type() == QEvent.MouseButtonRelease and datas.get_widget("central_photo").cadre_mode == "resize":
             if event.button() == Qt.LeftButton:
-                QApplication.restoreOverrideCursor()
+                QApplication.setOverrideCursor(Qt.ArrowCursor)
                 datas.get_widget("central_photo").resizing = None
                 datas.get_widget("central_photo").offset = None
 

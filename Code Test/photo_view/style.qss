@@ -172,16 +172,11 @@ QComboBox {
     background-color: #0d0f13;
 }
 
-QComboBox::item {
+QComboBox QAbstractItemView {
     /* Couleur de fond de l'option de menu sélectionnée */
     background-color: #0d0f13;
 }
-QComboBox::item:selected {
+QComboBox QAbstractItemView::item:hover {
     /* Couleur de fond de l'option de menu sélectionnée */
-    background-color: #1e212c;
-}
-
-QComboBox::item:disabled {
-    /* Couleur du texte de l'option de menu sélectionnée */
-    color: #888;
+    background-color: #eb0404;
 }

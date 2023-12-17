@@ -174,15 +174,20 @@ class StatView(QWidget):
                 label.setToolTip(name)
                 box.addWidget(label)
 
-                spin = QSpinBox()
+                # spin = QSpinBox()
 
+                # for box_ in boxes.values():
+                #     if box_["specie"] == id:
+                #         spin.setValue(spin.value() + 1)
+                
+                # spin.setDisabled(True)
+                # spin.setStyleSheet("background: #" + datas.get_color_specie(id))
+                spin = QLabel("0")
+                
                 for box_ in boxes.values():
                     if box_["specie"] == id:
-                        spin.setValue(spin.value() + 1)
-                
-                spin.setDisabled(True)
+                        spin.setText(str(int(spin.text()) + 1))
                 spin.setStyleSheet("background: #" + datas.get_color_specie(id))
-
                 box.addWidget(spin)
 
                 self.stats_list_box.addLayout(box)

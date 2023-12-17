@@ -259,7 +259,7 @@ class CentralPhoto(QWidget):
             QApplication.setOverrideCursor(Qt.CrossCursor)
         
         elif object == self.qlabel and event.type() == QEvent.Leave and self.cadre_mode == "add":
-            QApplication.restoreOverrideCursor()
+            QApplication.setOverrideCursor(Qt.ArrowCursor)
 
             if self.resizing:
                 self.resizing == None
@@ -392,7 +392,7 @@ class CentralPhoto(QWidget):
         elif event.type() == QEvent.MouseButtonRelease:
             if event.button() == Qt.LeftButton and self.cadre_mode == "add":
                 self.resizing = None
-                QApplication.restoreOverrideCursor()
+                QApplication.setOverrideCursor(Qt.ArrowCursor)
                 
                 print("Released the newly added cadre")
 
