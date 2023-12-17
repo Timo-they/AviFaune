@@ -3,6 +3,7 @@
 
 from functools import partial
 import os
+import csv
 from ultralytics import YOLO
 
 from PyQt5.QtWidgets import QAction, QMenu, QMainWindow, QMenuBar, QFileDialog, QMessageBox, QInputDialog
@@ -208,6 +209,24 @@ class MenuBarHandler():
         # TODO : Save stats at given path as CSV File
         print("TODO : Open File dialog to choose save path")
         print("TODO : Save stats at given path as CSV File")
+
+        with open('students.csv', 'w', newline='') as file:
+            writer = csv.writer(file)
+     
+            writer.writerow(["Serie", , ])
+            writer.writerow(["Chemin", ])
+            writer.writerow(["Bécasseau Sanderling", ])
+            writer.writerow(["Bernache Cravant", ])
+            writer.writerow(["Chevalier Gambette", ])
+            writer.writerow(["Foulque Macroule", ])
+            writer.writerow(["Goéland Arganté", ])
+            writer.writerow(["Grand Cormoran", ])
+            writer.writerow(["Mouette Rieuse", ])
+            writer.writerow(["Pluvier Argenté", ])
+            writer.writerow(["Tadorne de Belon", ])
+            writer.writerow(["Autre", ])
+
+
     
     def close_app(self):
         print("Closing app...")
