@@ -47,7 +47,7 @@ class CentralPhoto(QWidget):
         self.toolbutton_none.pressed.connect(self.normal_mode)
         self.toolbutton_none.setDisabled(True)
 
-        self.toolbutton_resize = QPushButton("Redimmensionner", self)
+        self.toolbutton_resize = QPushButton("Redimensionner", self)
         self.toolbutton_resize.installEventFilter(self)
         self.toolbutton_resize.move(offset*2 + self.toolbutton_none.width(), offset)
         self.toolbutton_resize.pressed.connect(self.resize_mode)

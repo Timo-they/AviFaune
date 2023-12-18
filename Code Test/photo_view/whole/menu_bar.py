@@ -313,7 +313,7 @@ class MenuBarHandler():
     def remove_specie(self, id, nom):
         print("Asking for deleting specie ", nom)
         oizo_window: QMainWindow = datas.get_widget("oizo_window")
-        confirmation = QMessageBox.question(oizo_window, "Enlever l'espèce " + nom, "Êtes-vous certain que de vouloir enlever cette espèce " + nom + " ?\nLes données statistiques associées à cette espèce seront supprimées.", QMessageBox.Yes | QMessageBox.No)
+        confirmation = QMessageBox.question(oizo_window, "Enlever l'espèce " + nom, "Êtes-vous certain que de vouloir enlever cette espèce : " + nom + " ?\nLes données statistiques associées à cette espèce seront supprimées.", QMessageBox.Yes | QMessageBox.No)
 
         if confirmation == QMessageBox.Yes:
             print("Confirmed specie deletion")
