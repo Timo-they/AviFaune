@@ -9,7 +9,6 @@ import whole.datas_loader_saver as datas_loader_saver
 
 from whole.window import OizoWindow
 
-
 if __name__ == "__main__":
     print()
     print(datas.COLOR_GREEN, " - - - - - Start of Oizooo App - - - - - ", datas.COLOR_RESET)

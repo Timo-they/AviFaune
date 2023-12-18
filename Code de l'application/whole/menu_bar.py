@@ -38,7 +38,6 @@ class MenuBarHandler():
 
         # Le menu Exporter
         self.export_global_stats_action = QAction("Tout exporter", oizo_window)
-        self.export_serie_stats_action = QAction("Exporter les statistiques de la série", oizo_window)
 
         # Le menu de Détection d'oiseaux
         self.auto_detect_whole_serie_action = QAction("Effectuer la détection d'oiseaux sur la série", oizo_window)
@@ -84,7 +83,6 @@ class MenuBarHandler():
 
         # Le menu exporter
         self.export_global_stats_action.triggered.connect(self.export_global_stats)
-        self.export_serie_stats_action.triggered.connect(self.export_serie_stats)
 
         # Le menu de Détection d'oiseaux
         self.auto_detect_whole_serie_action.triggered.connect(self.auto_detect_whole_serie)
@@ -117,7 +115,6 @@ class MenuBarHandler():
         self.menu_export.setToolTipsVisible(True)
 
         self.menu_export.addAction(self.export_global_stats_action)
-        #self.menu_export.addAction(self.export_serie_stats_action)
 
         # Le menu de Détection d'oiseaux
         self.menu_detection: QMenu = menu_bar.addMenu("Détection d'oiseaux")
@@ -141,9 +138,6 @@ class MenuBarHandler():
 
     #Quand la série actuelle ou la photo actuelle ou la liste des séries changent
     def update(self):
-        # Met à jour l'export de série
-        self.export_serie_stats_action.setDisabled(datas.get_current_serie() == "")
-
         # Met à jour l'accès aux actions de détecction
         self.auto_detect_whole_serie_action.setDisabled(datas.get_current_serie() == "")
         self.remove_detect_whole_serie_action.setDisabled(datas.get_current_serie() == "")

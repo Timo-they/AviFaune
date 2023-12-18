@@ -1,4 +1,0 @@
-
-C:/Users/ewenl/Documents/IMT Atlantique/2A/Projet commande entreprise/Code/Data
-C:/Users/ewenl/Documents/IMT Atlantique/2A/Projet commande entreprise/Code/__pycache__
-C:/Users/ewenl/Documents/IMT Atlantique/2A/Projet commande entreprise/GitHub Avifaune/AviFaune/Code Test/__pycache__
