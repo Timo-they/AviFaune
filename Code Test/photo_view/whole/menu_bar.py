@@ -208,13 +208,13 @@ class MenuBarHandler():
         # Display the save file dialog
         file_dialog = QFileDialog(datas.get_widget("oizo_window"))
         file_dialog.setAcceptMode(QFileDialog.AcceptSave)
-        file_dialog.setNameFilter("Text Files (*.csv);;All Files (*)")
+        file_dialog.setNameFilter("Fichiers CSV (*.csv);;Tous les fichiers (*)")
 
         if file_dialog.exec_() == QFileDialog.Accepted:
             selected_file = file_dialog.selectedFiles()[0]
             print(f"Selected file: {selected_file}")
             
-            with open(selected_file, 'w', newline='', encoding='utf-8') as file:
+            with open(selected_file, 'w', newline='', encoding='utf-8-sig') as file:
                 writer = csv.writer(file)
                 
                 liste = [""]
@@ -267,60 +267,6 @@ class MenuBarHandler():
     def auto_detect_whole_serie(self):
         for id, nom in datas.get_photos().items():
             self.auto_detect_photo(id, datas.get_current_photo_full_path(id))
-
-    def export_serie_stats(self):
-        # TODO : Open File dialog to choose save path
-        # TODO : Save stats at given path as CSV File
-        print("TODO : Open File dialog to choose save path")
-        print("TODO : Save stats at given path as CSV File")
-        
-        # Display the save file dialog
-        file_dialog = QFileDialog(datas.get_widget("oizo_window"))
-        file_dialog.setAcceptMode(QFileDialog.AcceptSave)
-        file_dialog.setNameFilter("Text Files (*.csv);;All Files (*)")
-
-        if file_dialog.exec_() == QFileDialog.Accepted:
-            selected_file = file_dialog.selectedFiles()[0]
-            print(f"Selected file: {selected_file}")
-            
-            with open(selected_file, 'w', newline='', encoding='utf-8') as file:
-                writer = csv.writer(file)
-                
-                liste = [""]
-                for id_serie, path_serie in datas.get_photos().items():
-                    liste.append(os.path.basename(os.path.dirname(path_serie)))
-
-                liste.append("Total")
-
-                writer.writerow(liste)
-
-                liste = []
-                for id_specie, name_specie in datas.get_species().items():
-                    liste.append(name_specie)
-
-                    for id_serie, path_serie in datas.get_series().items():
-                        global_stats = datas.get_stats_global_serie(id_serie)
-                        if global_stats.get(id_specie):
-                            liste.append(int(global_stats[id_specie]))
-                        
-                        else:
-                            liste.append("")
-
-                    total = None
-                    for id_serie, path_serie in datas.get_series().items():
-                        global_stats = datas.get_stats_global_serie(id_serie)
-                        if global_stats.get(id_specie):
-                            if total == None:
-                                total = 0
-                            total += int(global_stats[id_specie])
-                        
-                    if total == None:
-                        liste.append("")
-                    else:
-                        liste.append(total)
-                    
-                    writer.writerow(liste)
-                    liste = []
 
     def remove_detect_whole_serie(self):
         for id, nom in datas.get_photos().items():

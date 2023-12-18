@@ -8,7 +8,6 @@ def scan_serie():
     path_to_scan = datas.get_current_serie_path()
     new_photos = {}
 
-    # TODO : Si le chemin n'existe pas faudrait supprimer la série
     if not os.path.exists(path_to_scan):
         serie = datas.get_current_serie()
         datas.set_current_serie("")
@@ -31,9 +30,8 @@ def scan_serie():
 
     datas.set_photos(new_photos)
 
-    # TODO : Juste si y'a une image qui y est plus, on supprime ses stats associées
-    
-    for name, stats_photo in datas.get_stats_serie().items():
+    stats_serie = datas.get_stats_serie()
+    for name, stats_photo in stats_serie.items():
         if (not name in datas.get_photos().values()):
             if name != "global":
                 datas.remove_stats_current_photo_from_name(name)
