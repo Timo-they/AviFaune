@@ -1,5 +1,6 @@
 
 import os
+import copy
 import whole.datas_loader_saver as datas_loader_saver
 import whole.serie_scanner as serie_scanner
 
@@ -244,7 +245,7 @@ species_: dict = {}
 COLOR_SPECIES = ["F94144", "F3722C", "F8961E", "F9844A", "F9C74F", "90BE6D", "43AA8B", "4D908E", "577590", "277DA1"]
 
 def get_species():
-    return BASE_SPECIES | species_ | {"-1": "Autre"}
+    return BASE_SPECIES | species_
 
 def get_only_newly_added_species():
     return species_
@@ -291,18 +292,29 @@ def remove_specie(id_specie: str):
     global datas_loader_saver
     print(COLOR_BRIGHT_MAGENTA, "Data removing specie ", species_[id_specie], " with id : ", id_specie, COLOR_RESET)
 
+    stats = copy.deepcopy(get_stats())
+
+    for id_serie, stats_serie in stats.items():
+        print(stats_serie)
+        for nom_photo, stats_photo in stats_serie.items():
+            print(stats_photo)
+            if nom_photo == "global":
+                continue
+                
+            for id_box, stats_box in stats_photo.items():
+                print(stats_box)
+                if stats_box["specie"] == id_specie:
+                    print("Deleting box ", id_box, " : ", stats_box)
+                    del stats_[id_serie][nom_photo][id_box]
+
     del species_[id_specie]
 
     get_widget("stat_view").update()
     get_widget("menu_bar_handler").update()
     get_widget("central_photo").update_species()
-
-    # TODO : Remove all stats that uses that specie
-    for id_serie, stats_serie in get_stats().items():
-        for nom_photo, stats_photo in stats_serie.items():
-            for id_box, stats_box in stats_photo.items():
-                if stats_box["specie"] == id_specie:
-                    del stats_[id_serie][nom_photo][id_box]
+    get_widget("central_photo").update_boxes()
+    get_widget("central_view").updated_stats()
+    get_widget("bottom_layout").updated_stats()
     
     datas_loader_saver.save_datas()
 
@@ -343,10 +355,14 @@ def get_stats_serie():
     
     return stats
 
-def get_stats_global_serie():
-    serie_stats = stats_.get(current_serie_)
+def get_stats_global_serie(id_serie = None):
+
+    if id_serie == None:
+        id_serie = current_serie_
+
+    serie_stats = stats_.get(id_serie)
     if serie_stats == None:
-        print("2. There is no stats for the serie ", current_serie_)
+        print("2. There is no stats for the serie ", id_serie)
         return {}
     
     stats = serie_stats.get("global")

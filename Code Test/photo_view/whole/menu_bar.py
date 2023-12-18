@@ -117,7 +117,7 @@ class MenuBarHandler():
         self.menu_export.setToolTipsVisible(True)
 
         self.menu_export.addAction(self.export_global_stats_action)
-        self.menu_export.addAction(self.export_serie_stats_action)
+        #self.menu_export.addAction(self.export_serie_stats_action)
 
         # Le menu de Détection d'oiseaux
         self.menu_detection: QMenu = menu_bar.addMenu("Détection d'oiseaux")
@@ -205,26 +205,56 @@ class MenuBarHandler():
             print("Aborted.")
 
     def export_global_stats(self):
-        # TODO : Open File dialog to choose save path
-        # TODO : Save stats at given path as CSV File
-        print("TODO : Open File dialog to choose save path")
-        print("TODO : Save stats at given path as CSV File")
+        # Display the save file dialog
+        file_dialog = QFileDialog(datas.get_widget("oizo_window"))
+        file_dialog.setAcceptMode(QFileDialog.AcceptSave)
+        file_dialog.setNameFilter("Text Files (*.csv);;All Files (*)")
 
-        with open('students.csv', 'w', newline='') as file:
-            writer = csv.writer(file)
-     
-            # writer.writerow(["Serie", , ])
-            # writer.writerow(["Chemin", ])
-            # writer.writerow(["Bécasseau Sanderling", ])
-            # writer.writerow(["Bernache Cravant", ])
-            # writer.writerow(["Chevalier Gambette", ])
-            # writer.writerow(["Foulque Macroule", ])
-            # writer.writerow(["Goéland Arganté", ])
-            # writer.writerow(["Grand Cormoran", ])
-            # writer.writerow(["Mouette Rieuse", ])
-            # writer.writerow(["Pluvier Argenté", ])
-            # writer.writerow(["Tadorne de Belon", ])
-            # writer.writerow(["Autre", ])
+        if file_dialog.exec_() == QFileDialog.Accepted:
+            selected_file = file_dialog.selectedFiles()[0]
+            print(f"Selected file: {selected_file}")
+            
+            with open(selected_file, 'w', newline='', encoding='utf-8') as file:
+                writer = csv.writer(file)
+                
+                liste = [""]
+                for id_serie, path_serie in datas.get_series().items():
+                    liste.append(os.path.basename(os.path.dirname(path_serie)))
+
+                liste.append("Total")
+
+                writer.writerow(liste)
+
+                liste = []
+                for id_specie, name_specie in datas.get_species().items():
+                    liste.append(name_specie)
+
+                    for id_serie, path_serie in datas.get_series().items():
+                        global_stats = datas.get_stats_global_serie(id_serie)
+                        if global_stats.get(id_specie):
+                            liste.append(int(global_stats[id_specie]))
+                        
+                        else:
+                            liste.append("")
+
+                    total = None
+                    for id_serie, path_serie in datas.get_series().items():
+                        global_stats = datas.get_stats_global_serie(id_serie)
+                        if global_stats.get(id_specie):
+                            if total == None:
+                                total = 0
+                            total += int(global_stats[id_specie])
+                        
+                    if total == None:
+                        liste.append("")
+                    else:
+                        liste.append(total)
+                    
+                    writer.writerow(liste)
+                    liste = []
+
+                        
+
 
 
     
@@ -243,6 +273,54 @@ class MenuBarHandler():
         # TODO : Save stats at given path as CSV File
         print("TODO : Open File dialog to choose save path")
         print("TODO : Save stats at given path as CSV File")
+        
+        # Display the save file dialog
+        file_dialog = QFileDialog(datas.get_widget("oizo_window"))
+        file_dialog.setAcceptMode(QFileDialog.AcceptSave)
+        file_dialog.setNameFilter("Text Files (*.csv);;All Files (*)")
+
+        if file_dialog.exec_() == QFileDialog.Accepted:
+            selected_file = file_dialog.selectedFiles()[0]
+            print(f"Selected file: {selected_file}")
+            
+            with open(selected_file, 'w', newline='', encoding='utf-8') as file:
+                writer = csv.writer(file)
+                
+                liste = [""]
+                for id_serie, path_serie in datas.get_photos().items():
+                    liste.append(os.path.basename(os.path.dirname(path_serie)))
+
+                liste.append("Total")
+
+                writer.writerow(liste)
+
+                liste = []
+                for id_specie, name_specie in datas.get_species().items():
+                    liste.append(name_specie)
+
+                    for id_serie, path_serie in datas.get_series().items():
+                        global_stats = datas.get_stats_global_serie(id_serie)
+                        if global_stats.get(id_specie):
+                            liste.append(int(global_stats[id_specie]))
+                        
+                        else:
+                            liste.append("")
+
+                    total = None
+                    for id_serie, path_serie in datas.get_series().items():
+                        global_stats = datas.get_stats_global_serie(id_serie)
+                        if global_stats.get(id_specie):
+                            if total == None:
+                                total = 0
+                            total += int(global_stats[id_specie])
+                        
+                    if total == None:
+                        liste.append("")
+                    else:
+                        liste.append(total)
+                    
+                    writer.writerow(liste)
+                    liste = []
 
     def remove_detect_whole_serie(self):
         for id, nom in datas.get_photos().items():

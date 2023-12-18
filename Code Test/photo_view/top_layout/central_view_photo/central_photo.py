@@ -93,6 +93,7 @@ class CentralPhoto(QWidget):
         self.cadre_mode = "add"
         self.resizing = None
         self.comboBox.setVisible(True)
+        self.comboBox.showPopup()
 
     # Quand la fenêtre est resize
     def eventFilter(self, object: QObject, event: QEvent) -> bool:
@@ -256,10 +257,12 @@ class CentralPhoto(QWidget):
             self.resize()
 
         elif object == self.qlabel and (event.type() == QEvent.MouseMove or event.type() == QEvent.Enter) and self.cadre_mode == "add" and not self.resizing:
+            QApplication.restoreOverrideCursor()
             QApplication.setOverrideCursor(Qt.CrossCursor)
         
         elif object == self.qlabel and event.type() == QEvent.Leave and self.cadre_mode == "add":
-            QApplication.setOverrideCursor(Qt.ArrowCursor)
+            QApplication.restoreOverrideCursor()
+           #QApplication.setOverrideCursor(Qt.ArrowCursor)
 
             if self.resizing:
                 self.resizing == None
@@ -272,6 +275,7 @@ class CentralPhoto(QWidget):
 
             match self.resizing.resizing_anchor:
                 case "left_top":
+                    QApplication.restoreOverrideCursor()
                     QApplication.setOverrideCursor(Qt.SizeFDiagCursor)
                     self.resizing.x_photo = int(self.screen_to_photo(mouse_screen_x))
                     self.resizing.w = int(self.resizing.end_x_photo - self.resizing.x_photo)
@@ -279,41 +283,49 @@ class CentralPhoto(QWidget):
                     self.resizing.h = int(self.resizing.end_y_photo - self.resizing.y_photo)
 
                 case "left_bot":
+                    QApplication.restoreOverrideCursor()
                     QApplication.setOverrideCursor(Qt.SizeBDiagCursor)
                     self.resizing.x_photo = int(self.screen_to_photo(mouse_screen_x))
                     self.resizing.w = int(self.resizing.end_x_photo - self.resizing.x_photo)
                     self.resizing.h = int(self.screen_to_photo(mouse_screen_y) - self.resizing.y_photo)
 
                 case "left_mid":
+                    QApplication.restoreOverrideCursor()
                     QApplication.setOverrideCursor(Qt.SizeHorCursor)
                     self.resizing.x_photo = int(self.screen_to_photo(mouse_screen_x))
                     self.resizing.w = int(self.resizing.end_x_photo - self.resizing.x_photo)
 
                 case "right_top":
+                    QApplication.restoreOverrideCursor()
                     QApplication.setOverrideCursor(Qt.SizeBDiagCursor)
                     self.resizing.w = int(self.screen_to_photo(mouse_screen_x) - self.resizing.x_photo)
                     self.resizing.y_photo = int(self.screen_to_photo(mouse_screen_y))
                     self.resizing.h = int(self.resizing.end_y_photo - self.resizing.y_photo)
 
                 case "right_bot":
+                    QApplication.restoreOverrideCursor()
                     QApplication.setOverrideCursor(Qt.SizeFDiagCursor)
                     self.resizing.w = int(self.screen_to_photo(mouse_screen_x) - self.resizing.x_photo)
                     self.resizing.h = int(self.screen_to_photo(mouse_screen_y) - self.resizing.y_photo)
 
                 case "right_mid":
+                    QApplication.restoreOverrideCursor()
                     QApplication.setOverrideCursor(Qt.SizeHorCursor)
                     self.resizing.w = int(self.screen_to_photo(mouse_screen_x) - self.resizing.x_photo)
 
                 case "mid_top":
+                    QApplication.restoreOverrideCursor()
                     QApplication.setOverrideCursor(Qt.SizeVerCursor)
                     self.resizing.y_photo = int(self.screen_to_photo(mouse_screen_y))
                     self.resizing.h = int(self.resizing.end_y_photo - self.resizing.y_photo)
 
                 case "mid_bot":
+                    QApplication.restoreOverrideCursor()
                     QApplication.setOverrideCursor(Qt.SizeVerCursor)
                     self.resizing.h = int(self.screen_to_photo(mouse_screen_y) - self.resizing.y_photo)
 
                 case "mid":
+                    QApplication.restoreOverrideCursor()
                     QApplication.setOverrideCursor(Qt.SizeAllCursor)
                     if self.offset == None:
                         self.offset = (self.photo_to_screen(self.resizing.x_photo) - mouse_screen_x, self.photo_to_screen(self.resizing.y_photo) - mouse_screen_y)
@@ -387,12 +399,14 @@ class CentralPhoto(QWidget):
                         cadre.end_x_photo = self.screen_to_photo(event.x()) + min_cadre_size
                         cadre.end_y_photo = self.screen_to_photo(event.y()) + min_cadre_size
                 
+                QApplication.restoreOverrideCursor()
                 QApplication.setOverrideCursor(Qt.SizeFDiagCursor)
         
         elif event.type() == QEvent.MouseButtonRelease:
             if event.button() == Qt.LeftButton and self.cadre_mode == "add":
                 self.resizing = None
-                QApplication.setOverrideCursor(Qt.ArrowCursor)
+                QApplication.restoreOverrideCursor()
+                #QApplication.setOverrideCursor(Qt.ArrowCursor)
                 
                 print("Released the newly added cadre")
 

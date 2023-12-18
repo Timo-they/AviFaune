@@ -209,7 +209,7 @@ class Cadre(QLabel):
                 "104": "QEvent::WindowUnblocked",
                 "203": "QEvent::WinIdChange",
                 "126": "QEvent::ZOrderChange", }
-        print(event_lookup[str(event.type())])
+        #print(event_lookup[str(event.type())])
         
         handle_zone_size = 5
 
@@ -222,16 +222,19 @@ class Cadre(QLabel):
             if x < handle_zone_size:
                 # Top
                 if y < handle_zone_size:
+                    QApplication.restoreOverrideCursor()
                     QApplication.setOverrideCursor(Qt.SizeFDiagCursor)
                     self.resizing_anchor = "left_top"
 
                 # Bot
                 elif y > self.height() - handle_zone_size:
+                    QApplication.restoreOverrideCursor()
                     QApplication.setOverrideCursor(Qt.SizeBDiagCursor)
                     self.resizing_anchor = "left_bot"
 
                 # Mid
                 else:
+                    QApplication.restoreOverrideCursor()
                     QApplication.setOverrideCursor(Qt.SizeHorCursor)
                     self.resizing_anchor = "left_mid"
             
@@ -239,16 +242,19 @@ class Cadre(QLabel):
             elif x > self.width() - handle_zone_size:
                 # Top
                 if y < handle_zone_size:
+                    QApplication.restoreOverrideCursor()
                     QApplication.setOverrideCursor(Qt.SizeBDiagCursor)
                     self.resizing_anchor = "right_top"
 
                 # Bot
                 elif y > self.height() - handle_zone_size:
+                    QApplication.restoreOverrideCursor()
                     QApplication.setOverrideCursor(Qt.SizeFDiagCursor)
                     self.resizing_anchor = "right_bot"
 
                 # Mid
                 else:
+                    QApplication.restoreOverrideCursor()
                     QApplication.setOverrideCursor(Qt.SizeHorCursor)
                     self.resizing_anchor = "right_mid"
 
@@ -256,15 +262,18 @@ class Cadre(QLabel):
             else:
                 # Top
                 if y < handle_zone_size:
+                    QApplication.restoreOverrideCursor()
                     QApplication.setOverrideCursor(Qt.SizeVerCursor)
                     self.resizing_anchor = "mid_top"
 
                 # Bot
                 elif y > self.height() - handle_zone_size:
+                    QApplication.restoreOverrideCursor()
                     QApplication.setOverrideCursor(Qt.SizeVerCursor)
                     self.resizing_anchor = "mid_bot"
                 
                 else:
+                    QApplication.restoreOverrideCursor()
                     #QApplication.setOverrideCursor(Qt.ArrowCursor)
                     QApplication.setOverrideCursor(Qt.SizeAllCursor)
                     self.resizing_anchor = "mid"
@@ -272,7 +281,8 @@ class Cadre(QLabel):
             #return False
         
         elif event.type() == QEvent.HoverLeave and not datas.get_widget("central_photo").resizing and datas.get_widget("central_photo").cadre_mode == "resize":
-            QApplication.setOverrideCursor(Qt.ArrowCursor)
+            QApplication.restoreOverrideCursor()
+            #QApplication.setOverrideCursor(Qt.ArrowCursor)
 
         elif event.type() == QEvent.MouseButtonPress:
             if event.button() == Qt.LeftButton and datas.get_widget("central_photo").cadre_mode == "resize":
@@ -298,7 +308,8 @@ class Cadre(QLabel):
         
         elif event.type() == QEvent.MouseButtonRelease and datas.get_widget("central_photo").cadre_mode == "resize":
             if event.button() == Qt.LeftButton:
-                QApplication.setOverrideCursor(Qt.ArrowCursor)
+                QApplication.restoreOverrideCursor()
+                #QApplication.setOverrideCursor(Qt.ArrowCursor)
                 datas.get_widget("central_photo").resizing = None
                 datas.get_widget("central_photo").offset = None
 
