@@ -9,6 +9,11 @@ def scan_serie():
     new_photos = {}
 
     # TODO : Si le chemin n'existe pas faudrait supprimer la série
+    if not os.path.exists(path_to_scan):
+        serie = datas.get_current_serie()
+        datas.set_current_serie("")
+        datas.remove_serie(serie)
+        return
 
     files = os.listdir(path_to_scan)
     id = "0"
@@ -21,11 +26,15 @@ def scan_serie():
                 new_photos[id] = file
         
                 id = str(int(id)+1)
+        
+        # TODO : limiter le nombre de photos à 500
 
     datas.set_photos(new_photos)
 
     # TODO : Juste si y'a une image qui y est plus, on supprime ses stats associées
     
-    for name in datas.get_stats_serie():
-        pass
+    for name, stats_photo in datas.get_stats_serie().items():
+        if (not name in datas.get_photos().values()):
+            if name != "global":
+                datas.remove_stats_current_photo_from_name(name)
 

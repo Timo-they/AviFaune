@@ -141,8 +141,14 @@ class StatView(QWidget):
                 box.addWidget(label)
 
                 spin = QSpinBox()
+                size_policy = spin.sizePolicy()
+                size_policy.setHorizontalPolicy(QSizePolicy.Minimum)  # Adjust as needed
+                spin.setSizePolicy(size_policy)
+                spin.setMaximum(10000)
+
                 spin.setStyleSheet("background: #" + datas.get_color_specie(id))
                 spin.setDisabled(True)
+                
 
                 specie_stat = species_stats.get(id)
                 if specie_stat:
@@ -174,20 +180,19 @@ class StatView(QWidget):
                 label.setToolTip(name)
                 box.addWidget(label)
 
-                # spin = QSpinBox()
+                spin = QSpinBox()
+                spin.setMaximum(10000)
+                size_policy = spin.sizePolicy()
+                size_policy.setHorizontalPolicy(QSizePolicy.Minimum)  # Adjust as needed
+                spin.setSizePolicy(size_policy)
 
-                # for box_ in boxes.values():
-                #     if box_["specie"] == id:
-                #         spin.setValue(spin.value() + 1)
-                
-                # spin.setDisabled(True)
-                # spin.setStyleSheet("background: #" + datas.get_color_specie(id))
-                spin = QLabel("0")
-                
                 for box_ in boxes.values():
                     if box_["specie"] == id:
-                        spin.setText(str(int(spin.text()) + 1))
+                        spin.setValue(spin.value() + 1)
+                
+                spin.setDisabled(True)
                 spin.setStyleSheet("background: #" + datas.get_color_specie(id))
+                
                 box.addWidget(spin)
 
                 self.stats_list_box.addLayout(box)

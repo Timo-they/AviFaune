@@ -298,6 +298,11 @@ def remove_specie(id_specie: str):
     get_widget("central_photo").update_species()
 
     # TODO : Remove all stats that uses that specie
+    for id_serie, stats_serie in get_stats().items():
+        for nom_photo, stats_photo in stats_serie.items():
+            for id_box, stats_box in stats_photo.items():
+                if stats_box["specie"] == id_specie:
+                    del stats_[id_serie][nom_photo][id_box]
     
     datas_loader_saver.save_datas()
 
@@ -617,6 +622,23 @@ def remove_stats_current_photo(id_photo_to_remove_stats = None):
     
     if stats_.get(current_serie_) and stats_[current_serie_].get(photos_[id_photo_to_remove_stats]):
         del stats_[current_serie_][photos_[id_photo_to_remove_stats]]
+
+    calculate_serie_stats()
+
+    get_widget("stat_view").update()
+    get_widget("central_photo").update_boxes()
+    get_widget("central_view").updated_stats()
+    get_widget("bottom_layout").updated_stats()
+    
+    datas_loader_saver.save_datas()
+
+def remove_stats_current_photo_from_name(name):
+    global datas_loader_saver
+
+    print(COLOR_BRIGHT_MAGENTA, "Data removing stats for the photo ", name, " of serie ", current_serie_, COLOR_RESET)
+    
+    if stats_.get(current_serie_) and stats_[current_serie_].get(name):
+        del stats_[current_serie_][name]
 
     calculate_serie_stats()
 

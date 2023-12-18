@@ -30,9 +30,6 @@ class Cadre(QLabel):
         self.label.setAttribute(Qt.WA_TransparentForMouseEvents)
         self.label.setObjectName("cadre_label")
 
-        # TODO : Set cadre color depending on specie
-        print("TODO : Set cadre color depending on specie")
-
         self.setStyleSheet("#cadre {border: 2px solid #" + datas.get_color_specie(self.specie) + ";} #cadre:hover { background: #22" + datas.get_color_specie(self.specie) + ";} #cadre_label {padding: 2px;background-color: #aa" + datas.get_color_specie(self.specie) + ";}")
 
         self.setObjectName("cadre")

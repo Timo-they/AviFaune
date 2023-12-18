@@ -213,18 +213,18 @@ class MenuBarHandler():
         with open('students.csv', 'w', newline='') as file:
             writer = csv.writer(file)
      
-            writer.writerow(["Serie", , ])
-            writer.writerow(["Chemin", ])
-            writer.writerow(["Bécasseau Sanderling", ])
-            writer.writerow(["Bernache Cravant", ])
-            writer.writerow(["Chevalier Gambette", ])
-            writer.writerow(["Foulque Macroule", ])
-            writer.writerow(["Goéland Arganté", ])
-            writer.writerow(["Grand Cormoran", ])
-            writer.writerow(["Mouette Rieuse", ])
-            writer.writerow(["Pluvier Argenté", ])
-            writer.writerow(["Tadorne de Belon", ])
-            writer.writerow(["Autre", ])
+            # writer.writerow(["Serie", , ])
+            # writer.writerow(["Chemin", ])
+            # writer.writerow(["Bécasseau Sanderling", ])
+            # writer.writerow(["Bernache Cravant", ])
+            # writer.writerow(["Chevalier Gambette", ])
+            # writer.writerow(["Foulque Macroule", ])
+            # writer.writerow(["Goéland Arganté", ])
+            # writer.writerow(["Grand Cormoran", ])
+            # writer.writerow(["Mouette Rieuse", ])
+            # writer.writerow(["Pluvier Argenté", ])
+            # writer.writerow(["Tadorne de Belon", ])
+            # writer.writerow(["Autre", ])
 
 
     
@@ -311,7 +311,17 @@ class MenuBarHandler():
             print("Specie adding aborted")
 
     def remove_specie(self, id, nom):
-        datas.remove_specie(id)
+        print("Asking for deleting specie ", nom)
+        oizo_window: QMainWindow = datas.get_widget("oizo_window")
+        confirmation = QMessageBox.question(oizo_window, "Enlever l'espèce " + nom, "Êtes-vous certain que de vouloir enlever cette espèce " + nom + " ?\nLes données statistiques associées à cette espèce seront supprimées.", QMessageBox.Yes | QMessageBox.No)
+
+        if confirmation == QMessageBox.Yes:
+            print("Confirmed specie deletion")
+            print("Removing specie...")
+            datas.remove_specie(id)
+        
+        else:
+            print("Aborted.")
     
     def change_specie_color(self):
         # TODO : Add menu to change the color of a specie
