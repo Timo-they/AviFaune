@@ -25,7 +25,7 @@ class OizoWindow(QMainWindow):
     
     def build_window(self):
         print("Start of building app window...")
-        self.setWindowTitle("Torda Scan")
+        self.setWindowTitle("Avifaune Scan")
         # TODO : A la fin faudrait l'exporter pour qu'elle se mette joliment en maximised je pense
         self.resize(1024, 720)
 

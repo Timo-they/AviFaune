@@ -2,6 +2,7 @@
 
 import datas
 import os
+import copy
 
 def scan_serie():
     print("Scanning the serie")
@@ -30,7 +31,7 @@ def scan_serie():
 
     datas.set_photos(new_photos)
 
-    stats_serie = datas.get_stats_serie()
+    stats_serie = copy.deepcopy(datas.get_stats_serie())
     for name, stats_photo in stats_serie.items():
         if (not name in datas.get_photos().values()):
             if name != "global":
