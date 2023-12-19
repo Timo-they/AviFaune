@@ -1,8 +1,10 @@
 
+import exifread
+import time
+import os
 
 
-
-from PyQt5.QtGui import QPalette, QColor, QPixmap
+from PyQt5.QtGui import QPalette, QColor, QPixmap, QTransform
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QSizePolicy, QLabel, QFrame, QHBoxLayout, QToolButton
 from PyQt5.QtCore import Qt
 
@@ -73,7 +75,18 @@ class CentralViewPhoto(QWidget):
         print("Opening photo for middle ", datas.get_current_photo_full_path()) 
         self.title_label.setText(datas.get_current_photo_name())
 
-        photo_pixmap: QPixmap = QPixmap(datas.get_current_photo_full_path())
+        pix = open(datas.get_current_photo_full_path(), 'rb')
+        photo_pixmap = QPixmap(datas.get_current_photo_full_path())
+        tags = exifread.process_file(pix)
+        rotate90 = QTransform().rotate(90)
+        rotate270 = QTransform().rotate(270)
+        if "Image Orientation" in tags.keys():
+            val = tags["Image Orientation"].values
+            if 6 in val :
+                photo_pixmap = photo_pixmap.transformed(rotate90)
+            if 8 in val :
+                photo_pixmap = photo_pixmap.transformed(rotate270)
+       
         self.center_image.set_pixmap(photo_pixmap)
     
     # Retourne à la vue de série
