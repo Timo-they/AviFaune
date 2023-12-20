@@ -34,6 +34,7 @@ class ThumbnailButton(QToolButton):
         # Il n'y a pas de cadre encore pour cette photo
         if not path in datas.get_stats_serie().keys():
             self.label.setVisible(False)
+            self.label.setText(" 0 ")
 
         # Il y a des cadres dans cette photo
         else:
@@ -62,6 +63,7 @@ class ThumbnailButton(QToolButton):
         # Il n'y a pas de cadre encore pour cette photo
         if not self.path in datas.get_stats_serie().keys():
             self.label.setVisible(False)
+            self.label.setText(" 0 ")
 
         # Il y a des cadres dans cette photo
         else:
