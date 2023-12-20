@@ -4,7 +4,15 @@
 from functools import partial
 import os
 import csv
+
 # from ultralytics import YOLO
+
+# import torch
+# import torchvision.transforms as transforms
+
+import onnxruntime
+import numpy as np
+from PIL import Image
 
 from PyQt5.QtWidgets import QAction, QMenu, QMainWindow, QMenuBar, QFileDialog, QMessageBox, QInputDialog
 
@@ -288,8 +296,79 @@ class MenuBarHandler():
         if id_photo == "":
             print(datas.COLOR_BRIGHT_RED, "Hmmm, it seems detecting on no photo won't work ", id_photo, photo_full_path, datas.COLOR_RESET)
 
-        # datas.remove_stats_current_photo(id_photo)
-        # print("Detecting oizooos on ", photo_full_path)
+        datas.remove_stats_current_photo(id_photo)
+        print("Detecting oizooos on ", photo_full_path)
+
+        ######### ONNX
+        
+        # Load the ONNX model
+        onnx_model_path = "whole/best.onnx"  # Replace with the actual path to your ONNX model file
+
+        # Create an ONNX Runtime Inference Session
+        ort_session = onnxruntime.InferenceSession(onnx_model_path)
+
+        # Define image transformations
+        def preprocess_image(image_path):
+            image = Image.open(image_path).convert("RGB")
+            image = image.resize((640, 640))  # Adjust the size based on your model's input size
+            image = np.array(image).astype(np.float32) / 255.0
+            image = np.transpose(image, (2, 0, 1))  # Change HWC to CHW
+            image = np.expand_dims(image, axis=0)
+            return image
+
+        # Load and preprocess the image
+        input_data = preprocess_image(photo_full_path)
+
+        # Perform inference
+        ort_inputs = {ort_session.get_inputs()[0].name: input_data}
+        ort_outputs = ort_session.run(None, ort_inputs)
+
+        print(ort_outputs)
+
+        # # Process the output
+        # boxes_classes = ort_outputs[0][0]
+        # boxes_shapes = ort_outputs[1][0]
+        # boxes_probs = ort_outputs[2][0]
+
+        # for i in range(len(boxes_shapes)):
+        #     class_, shape, prob = int(boxes_classes[i]), boxes_shapes[i], boxes_probs[i]
+        #     # Process the results as needed
+        #     print(f"Class: {class_}, Shape: {shape}, Probability: {prob}")
+
+        ######### TORCH
+
+        # model_path = "whole/best.pt"  # Replace with the actual path to your model file
+        # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+        # if self.model == None:
+        #     self.model = torch.load(model_path, map_location=device)
+        #     self.model.eval()
+
+        # # Define image transformations
+        # transform = transforms.Compose([
+        #     transforms.Resize((416, 416)),  # Adjust the size based on your model's input size
+        #     transforms.ToTensor(),
+        # ])
+
+        # # Load and preprocess the image
+        # image = Image.open(photo_full_path).convert("RGB")
+        # image_tensor = transform(image).unsqueeze(0).to(device)
+
+        # # Perform inference
+        # with torch.no_grad():
+        #     prediction = self.model(image_tensor)
+
+        # # Process the prediction
+        # boxes_classes = prediction[0].boxes.cls.cpu()
+        # boxes_shapes = prediction[0].boxes.xywh.cpu()
+        # boxes_probs = prediction[0].boxes.conf.cpu()
+
+        # for i in range(len(boxes_shapes)):
+        #     class_, shape, prob = boxes_classes[i], boxes_shapes[i], boxes_probs[i]
+        #     # Process the results as needed
+        #     print(f"Class: {class_}, Shape: {shape}, Probability: {prob}")
+
+        ######## ULTRALYTICS
 
         # if self.model == None:
         #     print("Loading YOLO Model... May take a while...")
