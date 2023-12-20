@@ -184,7 +184,7 @@ class MenuBarHandler():
     def remove_serie(self, id: str, path: str):
         print("Asking for deleting serie ", path)
         oizo_window: QMainWindow = datas.get_widget("oizo_window")
-        confirmation = QMessageBox.question(oizo_window, "Enlever la série " + os.path.basename(os.path.dirname(path)), "Êtes-vous certain que de vouloir enlever cette série ?" + os.path.basename(os.path.dirname(path)) + " ?\nLa série n'apparaitra plus dans la liste de séries, les statistiques liées à la série seront supprimées, mais le dossier associé à la série ne sera pas supprimé.", QMessageBox.Yes | QMessageBox.No)
+        confirmation = QMessageBox.question(oizo_window, "Enlever la série " + os.path.basename(os.path.dirname(path)), "Êtes-vous certain de vouloir enlever cette série ?" + os.path.basename(os.path.dirname(path)) + " ?\nLa série n'apparaitra plus dans la liste de séries, les statistiques liées à la série seront supprimées, mais le dossier associé à la série ne sera pas supprimé.", QMessageBox.Yes | QMessageBox.No)
 
         if confirmation == QMessageBox.Yes:
             print("Confirmed serie deletion")
@@ -319,7 +319,7 @@ class MenuBarHandler():
 
     def add_specie(self):
         oizo_window = datas.get_widget("oizo_window")
-        text, ok = QInputDialog.getText(oizo_window, "Ajout d'une espèce", "Saisis le nom de l'espèce que tu souhaite rajouter à l'application : ")
+        text, ok = QInputDialog.getText(oizo_window, "Ajout d'une espèce", "Saisir le nom de l'espèce que vous souhaitez rajouter à l'application : ")
 
         if ok and text != "":
             print("Adding specie", text)
@@ -331,7 +331,7 @@ class MenuBarHandler():
     def remove_specie(self, id, nom):
         print("Asking for deleting specie ", nom)
         oizo_window: QMainWindow = datas.get_widget("oizo_window")
-        confirmation = QMessageBox.question(oizo_window, "Enlever l'espèce " + nom, "Êtes-vous certain que de vouloir enlever cette espèce : " + nom + " ?\nLes données statistiques associées à cette espèce seront supprimées.", QMessageBox.Yes | QMessageBox.No)
+        confirmation = QMessageBox.question(oizo_window, "Enlever l'espèce " + nom, "Êtes-vous certain de vouloir enlever cette espèce : " + nom + " ?\nLes données statistiques associées à cette espèce seront supprimées.", QMessageBox.Yes | QMessageBox.No)
 
         if confirmation == QMessageBox.Yes:
             print("Confirmed specie deletion")
