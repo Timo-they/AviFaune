@@ -25,9 +25,198 @@ if __name__ == "__main__":
     win.show()
 
     # Chargement de la feuille de style (c'est très stylé)
-    qss_path = "style.qss"
-    with open(qss_path, "r") as file:
-        app.setStyleSheet(file.read())
+    # qss_path = "style.qss"
+    # with open(qss_path, "r") as file:
+    #     app.setStyleSheet(file.read())
+    app.setStyleSheet("""
+        /**** Couleur du texte ****/
+
+QWidget {
+    /* Couleur du texte en général */
+    color: #eee;
+}
+
+        /**** Couleurs de fond ****/
+
+QMainWindow {
+    /* Couleur de fond de l'application */
+    background-color: #252732;
+}
+
+QMessageBox {
+    /* Couleur de fond des popups */
+    background-color: #252732;
+}
+QInputDialog {
+    /* Couleur de fond des popups */
+    background-color: #252732;
+}
+
+#panel-color {
+    /* Couleur de fond des menus (il faut le changer dans central_view.py et central_view_photo.py aussi) */
+    background: #303446;
+}
+
+        /**** Les boutons de menu en haut ****/
+
+QMenuBar {
+    /* Couleur de fond de la barre de menu */
+    background-color: #181a21;
+}
+
+QMenuBar::item:selected {
+    /* Couleur de fond du menu sélectionné */
+    background-color: #23517f;
+}
+
+QMenuBar::item:disabled {
+    /* Couleur du texte des menu inaccessibles (ex: Photo quand on est dans photo) */
+    color: #888;
+}
+
+QMenu {
+    /* Couleur de fond des options de menu */
+    background-color: #0d0f13;
+}
+
+QMenu::item:selected {
+    /* Couleur de fond de l'option de menu sélectionnée */
+    background-color: #1e212c;
+}
+
+QMenu::item:disabled {
+    /* Couleur du texte de l'option de menu sélectionnée */
+    color: #888;
+}
+
+QMenu::separator {
+    background: #55eeeeee;
+    margin: 10px;
+}
+
+QMenu::separator {
+    height : 2px;
+}
+
+        /**** Les boutons en général ****/
+
+/* Les boutons normaux */
+QPushButton, QToolButton {
+    background-color: #1e61a2;
+    border-radius: 2px; /*Pas sur que y'ait besoin de coins arrondis*/
+    padding: 8px;
+}
+
+/* Les boutons de série à gauche */
+QPushButton#serie-button {
+    margin: 2px 4px 2px 4px ;
+}
+
+/* Les boutons survolés */
+QPushButton:hover, QToolButton:hover {
+    background-color: #2278ce;
+}
+
+/* Les boutons appuyés */
+QPushButton:pressed, QToolButton:pressed {
+    background-color: #23517f;
+}
+
+/* Les boutons désactivés (quand une série ou photo est sélectionnée) */
+QPushButton:disabled#serie-button, QToolButton:disabled {
+    background-color: #318de9;
+    margin: 0px;
+    border: 3px solid #5aa7f5;
+}
+
+/* Les boutons désactivés (quand une série ou photo est sélectionnée) */
+QPushButton:disabled {
+    background-color: #318de9;
+    
+}
+
+/* Les boutons de navigation en bas désactivés */
+QToolButton:disabled#navigation_button {
+    background-color: #13304d;
+    margin: 0px;
+    border: none;
+}
+
+QToolButton:first-child {
+    border: 2px solid red;
+}
+
+        /**** Scroll bars ****/
+
+QScrollBar:vertical {
+    background-color: #303030;
+    width: 8px;
+}
+QScrollBar::handle:vertical {
+    background-color:#ccc ;
+    border-radius: 4px;
+    min-height: 8px;
+}
+QScrollBar::handle:vertical:hover {
+    background-color:#fff ;
+}
+QScrollBar::handle:vertical:pressed {
+    background-color:#aaa ;
+}
+
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical, QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0px;
+}
+
+QScrollBar:horizontal {
+    background-color: #303030;
+    height: 8px;
+}
+QScrollBar::handle:horizontal {
+    background-color:#ccc ;
+    border-radius: 4px;
+    min-width: 8px;
+}
+QScrollBar::handle:horizontal:hover {
+    background-color:#fff ;
+}
+QScrollBar::handle:horizontal:pressed {
+    background-color:#aaa ;
+}
+
+QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal, QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
+    width: 0px;
+}
+
+        /**** Les petits cadres sur les miniatures ****/
+
+#little_cadre {
+    border: 2px solid #cc3333;
+    background: #99cc3333;
+}
+
+        /**** Les compteurs d'oiseaux ****/
+
+QSpinBox, QLineEdit {
+    background: #0f4e8d;
+}
+
+QSpinBox:disabled {
+    background: #13304d;
+}
+
+        /**** Les menus déroulants ****/
+
+QComboBox {
+    /* Couleur de fond des options de menu */
+    background-color: #0d0f13;
+}
+
+QComboBox QAbstractItemView {
+    /* Couleur de fond de l'option de menu sélectionnée */
+    background-color: #0d0f13;
+}
+""")
 
     # Une fois que tout est en place, on charge les données pour qu'elles soient affichées joliment
     datas_loader_saver.load_datas()

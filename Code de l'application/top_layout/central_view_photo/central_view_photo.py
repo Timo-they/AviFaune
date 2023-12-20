@@ -75,17 +75,19 @@ class CentralViewPhoto(QWidget):
         print("Opening photo for middle ", datas.get_current_photo_full_path()) 
         self.title_label.setText(datas.get_current_photo_name())
 
-        pix = open(datas.get_current_photo_full_path(), 'rb')
         photo_pixmap = QPixmap(datas.get_current_photo_full_path())
-        tags = exifread.process_file(pix)
-        rotate90 = QTransform().rotate(90)
-        rotate270 = QTransform().rotate(270)
-        if "Image Orientation" in tags.keys():
-            val = tags["Image Orientation"].values
-            if 6 in val :
-                photo_pixmap = photo_pixmap.transformed(rotate90)
-            if 8 in val :
-                photo_pixmap = photo_pixmap.transformed(rotate270)
+        
+        with open(datas.get_current_photo_full_path(), 'rb') as pix:
+            tags = exifread.process_file(pix)
+            rotate90 = QTransform().rotate(90)
+            rotate270 = QTransform().rotate(270)
+
+            if "Image Orientation" in tags.keys():
+                val = tags["Image Orientation"].values
+                if 6 in val :
+                    photo_pixmap = photo_pixmap.transformed(rotate90)
+                if 8 in val :
+                    photo_pixmap = photo_pixmap.transformed(rotate270)
        
         self.center_image.set_pixmap(photo_pixmap)
     

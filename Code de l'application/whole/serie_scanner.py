@@ -10,7 +10,6 @@ import copy
 def scan_serie():
     print("Scanning the serie")
     path_to_scan = datas.get_current_serie_path()
-    # new_photos = {}
 
     if not os.path.exists(path_to_scan):
         serie = datas.get_current_serie()
@@ -18,38 +17,27 @@ def scan_serie():
         datas.remove_serie(serie)
         return
 
-    # files = os.listdir(path_to_scan)
-    # id = "0"
-    
-    # for file in files:
-    #     if os.path.isfile(path_to_scan + file):
-
-    #         # Please add extensions that should be handled
-    #         if os.path.splitext(file)[1] in [".jpg", ".JPG", ".jpeg", ".png"]:
-    #             new_photos[id] = file
-        
-    #             id = str(int(id)+1)
-        
-    #     # TODO : limiter le nombre de photos à 500
+    # TODO : limiter le nombre de photos à 500
     
     photos = {}
     photos_date = {}
     id = "0"
-    # TODO : Si le chemin n'existe pas faudrait supprimer la série
+    
     files = os.listdir(path_to_scan)
-    month=None
+    month = None
     
     for file in files:
         if os.path.isfile(path_to_scan + file):
             if os.path.splitext(file)[1] in  [".jpg", ".JPG", ".jpeg", ".png"]:
                 date = time.ctime(os.path.getmtime(path_to_scan + file))
-                photos[file]=date
+                photos[file] = date
+    
     print(photos)
     
     for photo in range(len(photos)):
-       
-        date1=datetime.datetime(1945,1,1,12,0,0)
-        right_file=list(photos.keys())[0]
+
+        date1 = datetime.datetime(1945,1,1,12,0,0)
+        right_file = list(photos.keys())[0]
            
         for items in photos.items():
             
@@ -80,14 +68,15 @@ def scan_serie():
                     
             if date2 > date1:
                 right_file = file
-                date1=date2
+                date1 = date2
+            
         photos_date[id] = right_file
         id = str(int(id)+1)
         photos.pop(right_file)
+
     print(photos_date)
          
     datas.set_photos(photos_date)
-    #datas.set_photos(new_photos)
 
     stats_serie = copy.deepcopy(datas.get_stats_serie())
     for name, stats_photo in stats_serie.items():

@@ -400,39 +400,6 @@ def set_stats(new_stats: dict):
 
     datas_loader_saver.save_datas()
 
-# def set_global_serie_stat(id_serie: str, id_specie: str, count: str):
-#     global datas_loader_saver
-#     print(COLOR_BRIGHT_MAGENTA, "Data setting stat for serie ", id_serie, ", has ", count, " of specie ", id_specie, COLOR_RESET)
-
-#     stats_[id_serie]["global"] = count
-
-#     get_widget("stat_view").update()
-
-#     datas_loader_saver.save_datas()
-
-# def set_photo_stat(id_serie: str, id_photo: str, id_specie: str, count : str):
-#     global datas_loader_saver
-#     print(COLOR_BRIGHT_MAGENTA, "Data adding stat for the photo ", id_photo, " of serie ", id_serie, ", has ", count, " of specie ", id_specie, COLOR_RESET)
-
-#     serie_stats = stats_.get(current_serie_)
-#     if serie_stats == None:
-#         print("There is no stats for the serie ", current_serie_)
-#         return {}
-    
-#     stats = serie_stats.get(current_photo_)
-#     if stats == None:
-#         print("There is no stat for the photo ", current_photo_)
-#         return {}
-    
-#     stats_[id_serie][photos_[id_photo]][id_specie] = count
-    
-#     # TODO: Recalculate stat of the whole serie
-#     print("TODO : Recalculate stats of the whole serie")
-
-#     get_widget("stat_view").update()
-
-#     datas_loader_saver.save_datas()
-
 def set_stats_global_serie(stats: dict):
     global datas_loader_saver
     print(COLOR_BRIGHT_MAGENTA, "Data setting global for ", get_current_serie(), " to ", stats, COLOR_RESET)

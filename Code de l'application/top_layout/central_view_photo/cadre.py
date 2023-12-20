@@ -21,7 +21,6 @@ class Cadre(QLabel):
         self.id_box = id_box
         self.specie = str(int(specie))
         self.x_photo, self.y_photo, self.w, self.h = int(x), int(y), int(w), int(h)
-        #self.x_photo, self.y_photo = int(self.x_photo - self.w/2), int(self.y_photo - self.h/2)
 
         self.qlabel = qlabel
         self.pixmap = pixmap
@@ -53,6 +52,9 @@ class Cadre(QLabel):
         pixmap_width = self.pixmap.width()
         pixmap_height = self.pixmap.height()
         # print("QPixmap : ", pixmap_width, pixmap_height)
+
+        if pixmap_height == 0 or pixmap_width == 0:
+            return
 
         cadre_x = int(x * qlabel_width / pixmap_width)
         cadre_y = int(y * qlabel_height / pixmap_height)

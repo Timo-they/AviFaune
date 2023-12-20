@@ -4,7 +4,15 @@
 from functools import partial
 import os
 import csv
-from ultralytics import YOLO
+
+# from ultralytics import YOLO
+
+# import torch
+# import torchvision.transforms as transforms
+
+import onnxruntime
+import numpy as np
+from PIL import Image
 
 from PyQt5.QtWidgets import QAction, QMenu, QMainWindow, QMenuBar, QFileDialog, QMessageBox, QInputDialog
 
@@ -12,7 +20,7 @@ import datas
 
 class MenuBarHandler():
 
-    model: YOLO
+    # model: YOLO
 
     def __init__(self):
         datas.set_widget("menu_bar_handler", self)
@@ -32,7 +40,7 @@ class MenuBarHandler():
         # Le menu de Fichier
         self.open_folder_as_serie_action = QAction("Ajouter une série", oizo_window)
         # TODO : Voir si on met des tooltips pour chacun...
-        self.open_folder_as_serie_action.setToolTip("Ajoute un dossier en tant que série")
+        # self.open_folder_as_serie_action.setToolTip("Ajoute un dossier en tant que série")
         self.create_remove_serie_actions()
         self.close_app_action = QAction("Fermer l'application", oizo_window)
 
@@ -48,7 +56,6 @@ class MenuBarHandler():
         # Le menu d'Espèces
         self.add_specie_action = QAction("Ajouter une nouvelle espèce d'oiseaux", oizo_window)
         self.create_remove_specie_actions()
-        self.change_specie_color_action = QAction("Changer la couleur d'une espèce", oizo_window)
 
     # Ca c'est pour qu'on ai un bouton de suppression pour chaque série
     def create_remove_serie_actions(self):
@@ -92,7 +99,6 @@ class MenuBarHandler():
 
         # Le menu d'Especes
         self.add_specie_action.triggered.connect(self.add_specie)
-        self.change_specie_color_action.triggered.connect(self.change_specie_color)
 
     # Finalement on construit tout le menu
     def add_actions(self):
@@ -134,8 +140,7 @@ class MenuBarHandler():
         self.remove_specie_menu.setToolTipsVisible(True)
         for action in self.remove_specie_actions:
             self.remove_specie_menu.addAction(action)
-        #self.menu_especes.addAction(self.change_specie_color_action)
-
+    
     #Quand la série actuelle ou la photo actuelle ou la liste des séries changent
     def update(self):
         # Met à jour l'accès aux actions de détecction
@@ -184,7 +189,7 @@ class MenuBarHandler():
     def remove_serie(self, id: str, path: str):
         print("Asking for deleting serie ", path)
         oizo_window: QMainWindow = datas.get_widget("oizo_window")
-        confirmation = QMessageBox.question(oizo_window, "Enlever la série " + os.path.basename(os.path.dirname(path)), "Êtes-vous certain que de vouloir enlever cette série ?" + os.path.basename(os.path.dirname(path)) + " ?\nLa série n'apparaitra plus dans la liste de séries, les statistiques liées à la série seront supprimées, mais le dossier associé à la série ne sera pas supprimé.", QMessageBox.Yes | QMessageBox.No)
+        confirmation = QMessageBox.question(oizo_window, "Enlever la série " + os.path.basename(os.path.dirname(path)), "Êtes-vous certain de vouloir enlever cette série ?" + os.path.basename(os.path.dirname(path)) + " ?\nLa série n'apparaitra plus dans la liste de séries, les statistiques liées à la série seront supprimées, mais le dossier associé à la série ne sera pas supprimé.", QMessageBox.Yes | QMessageBox.No)
 
         if confirmation == QMessageBox.Yes:
             print("Confirmed serie deletion")
@@ -294,19 +299,90 @@ class MenuBarHandler():
         datas.remove_stats_current_photo(id_photo)
         print("Detecting oizooos on ", photo_full_path)
 
-        if self.model == None:
-            print("Loading YOLO Model... May take a while...")
-            self.model = YOLO("whole/best.pt")
+        ######### ONNX
         
-        prediction = self.model.predict(photo_full_path, save=False)
+        # Load the ONNX model
+        onnx_model_path = "whole/best.onnx"  # Replace with the actual path to your ONNX model file
 
-        boxes_classes = prediction[0].boxes.cls.cpu()
-        boxes_shapes = prediction[0].boxes.xywh.cpu()
-        boxes_probs = prediction[0].boxes.conf.cpu()
+        # Create an ONNX Runtime Inference Session
+        ort_session = onnxruntime.InferenceSession(onnx_model_path)
 
-        for i in range(len(boxes_shapes)):
-            class_, shape, prob = boxes_classes[i], boxes_shapes[i], boxes_probs[i]
-            datas.add_box_photo(id_photo, int(class_), int(shape[0]) - int(float(shape[2])/2), int(shape[1]) - int(float(shape[3])/2), int(shape[2]), int(shape[3]), round(float(prob), 2))
+        # Define image transformations
+        def preprocess_image(image_path):
+            image = Image.open(image_path).convert("RGB")
+            image = image.resize((640, 640))  # Adjust the size based on your model's input size
+            image = np.array(image).astype(np.float32) / 255.0
+            image = np.transpose(image, (2, 0, 1))  # Change HWC to CHW
+            image = np.expand_dims(image, axis=0)
+            return image
+
+        # Load and preprocess the image
+        input_data = preprocess_image(photo_full_path)
+
+        # Perform inference
+        ort_inputs = {ort_session.get_inputs()[0].name: input_data}
+        ort_outputs = ort_session.run(None, ort_inputs)
+
+        print(ort_outputs)
+
+        # # Process the output
+        # boxes_classes = ort_outputs[0][0]
+        # boxes_shapes = ort_outputs[1][0]
+        # boxes_probs = ort_outputs[2][0]
+
+        # for i in range(len(boxes_shapes)):
+        #     class_, shape, prob = int(boxes_classes[i]), boxes_shapes[i], boxes_probs[i]
+        #     # Process the results as needed
+        #     print(f"Class: {class_}, Shape: {shape}, Probability: {prob}")
+
+        ######### TORCH
+
+        # model_path = "whole/best.pt"  # Replace with the actual path to your model file
+        # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+        # if self.model == None:
+        #     self.model = torch.load(model_path, map_location=device)
+        #     self.model.eval()
+
+        # # Define image transformations
+        # transform = transforms.Compose([
+        #     transforms.Resize((416, 416)),  # Adjust the size based on your model's input size
+        #     transforms.ToTensor(),
+        # ])
+
+        # # Load and preprocess the image
+        # image = Image.open(photo_full_path).convert("RGB")
+        # image_tensor = transform(image).unsqueeze(0).to(device)
+
+        # # Perform inference
+        # with torch.no_grad():
+        #     prediction = self.model(image_tensor)
+
+        # # Process the prediction
+        # boxes_classes = prediction[0].boxes.cls.cpu()
+        # boxes_shapes = prediction[0].boxes.xywh.cpu()
+        # boxes_probs = prediction[0].boxes.conf.cpu()
+
+        # for i in range(len(boxes_shapes)):
+        #     class_, shape, prob = boxes_classes[i], boxes_shapes[i], boxes_probs[i]
+        #     # Process the results as needed
+        #     print(f"Class: {class_}, Shape: {shape}, Probability: {prob}")
+
+        ######## ULTRALYTICS
+
+        # if self.model == None:
+        #     print("Loading YOLO Model... May take a while...")
+        #     self.model = YOLO("whole/best.pt")
+        
+        # prediction = self.model.predict(photo_full_path, save=False)
+
+        # boxes_classes = prediction[0].boxes.cls.cpu()
+        # boxes_shapes = prediction[0].boxes.xywh.cpu()
+        # boxes_probs = prediction[0].boxes.conf.cpu()
+
+        # for i in range(len(boxes_shapes)):
+        #     class_, shape, prob = boxes_classes[i], boxes_shapes[i], boxes_probs[i]
+        #     datas.add_box_photo(id_photo, int(class_), int(shape[0]) - int(float(shape[2])/2), int(shape[1]) - int(float(shape[3])/2), int(shape[2]), int(shape[3]), round(float(prob), 2))
 
     def remove_detect_photo(self):
         datas.remove_stats_current_photo()
@@ -319,7 +395,7 @@ class MenuBarHandler():
 
     def add_specie(self):
         oizo_window = datas.get_widget("oizo_window")
-        text, ok = QInputDialog.getText(oizo_window, "Ajout d'une espèce", "Saisis le nom de l'espèce que tu souhaite rajouter à l'application : ")
+        text, ok = QInputDialog.getText(oizo_window, "Ajout d'une espèce", "Saisir le nom de l'espèce que vous souhaitez rajouter à l'application : ")
 
         if ok and text != "":
             print("Adding specie", text)
@@ -331,7 +407,7 @@ class MenuBarHandler():
     def remove_specie(self, id, nom):
         print("Asking for deleting specie ", nom)
         oizo_window: QMainWindow = datas.get_widget("oizo_window")
-        confirmation = QMessageBox.question(oizo_window, "Enlever l'espèce " + nom, "Êtes-vous certain que de vouloir enlever cette espèce : " + nom + " ?\nLes données statistiques associées à cette espèce seront supprimées.", QMessageBox.Yes | QMessageBox.No)
+        confirmation = QMessageBox.question(oizo_window, "Enlever l'espèce " + nom, "Êtes-vous certain de vouloir enlever cette espèce : " + nom + " ?\nLes données statistiques associées à cette espèce seront supprimées.", QMessageBox.Yes | QMessageBox.No)
 
         if confirmation == QMessageBox.Yes:
             print("Confirmed specie deletion")
@@ -340,10 +416,3 @@ class MenuBarHandler():
         
         else:
             print("Aborted.")
-    
-    def change_specie_color(self):
-        # TODO : Add menu to change the color of a specie
-        print("TODO : Add menu to change the color of a specie")
-    
-
-

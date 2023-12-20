@@ -64,6 +64,10 @@ QMenu::separator {
     margin: 10px;
 }
 
+QMenu::separator {
+    height : 2px;
+}
+
         /**** Les boutons en général ****/
 
 /* Les boutons normaux */
@@ -154,10 +158,14 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal, QScrollBar::ad
     width: 0px;
 }
 
+        /**** Les petits cadres sur les miniatures ****/
+
 #little_cadre {
     border: 2px solid #cc3333;
     background: #99cc3333;
 }
+
+        /**** Les compteurs d'oiseaux ****/
 
 QSpinBox, QLineEdit {
     background: #0f4e8d;
@@ -167,6 +175,8 @@ QSpinBox:disabled {
     background: #13304d;
 }
 
+        /**** Les menus déroulants ****/
+
 QComboBox {
     /* Couleur de fond des options de menu */
     background-color: #0d0f13;
@@ -175,13 +185,4 @@ QComboBox {
 QComboBox QAbstractItemView {
     /* Couleur de fond de l'option de menu sélectionnée */
     background-color: #0d0f13;
-}
-
-QComboBox QAbstractItemView::item:hover {
-    /* Couleur de fond de l'option de menu sélectionnée */
-    background-color: #eb0404;
-}
-
-QMenu::separator {
-    height : 2px;
 }

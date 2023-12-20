@@ -4,8 +4,9 @@
 
 import time
 import traceback, sys
+import exifread
 
-from PyQt5.QtGui import QPixmap, QIcon
+from PyQt5.QtGui import QPixmap, QIcon, QTransform
 from PyQt5.QtCore import QObject, QThread, QRect, Qt, pyqtSignal, QRunnable, pyqtSlot
 
 import datas
@@ -53,6 +54,18 @@ class ThumbnailLoader(QRunnable):
     def load_thumbnail(self, path: str) -> QPixmap:
         photo_pixmap = QPixmap(self.serie_path + path)
 
+        with open(self.serie_path + path, 'rb') as pix:
+            tags = exifread.process_file(pix)
+            rotate90 = QTransform().rotate(90)
+            rotate270 = QTransform().rotate(270)
+
+            if "Image Orientation" in tags.keys():
+                val = tags["Image Orientation"].values
+                if 6 in val :
+                    photo_pixmap = photo_pixmap.transformed(rotate90)
+                if 8 in val :
+                    photo_pixmap = photo_pixmap.transformed(rotate270)
+
         # TODO : Si la photo ne charge pas, l'enlève des photos
 
         #On rend d'abord la photo en temps que carré 1024x1024px (ici, on ne fait que la réduire en taille pour que son plus petit coté fasse 1024px)
@@ -65,6 +78,8 @@ class ThumbnailLoader(QRunnable):
 
         #Ensuite on la réduit de taille d'un facteur 4 avec un smooth, qui permet d'avoir un joli rendu
         final_pixmap = photo_pixmap_overscaled_cropped.scaled(256, 256, transformMode=Qt.SmoothTransformation)
+
+
 
         return QIcon(final_pixmap)
 
