@@ -4,7 +4,7 @@
 from functools import partial
 import os
 import csv
-from ultralytics import YOLO
+# from ultralytics import YOLO
 
 from PyQt5.QtWidgets import QAction, QMenu, QMainWindow, QMenuBar, QFileDialog, QMessageBox, QInputDialog
 
@@ -12,7 +12,7 @@ import datas
 
 class MenuBarHandler():
 
-    model: YOLO
+    # model: YOLO
 
     def __init__(self):
         datas.set_widget("menu_bar_handler", self)
@@ -32,7 +32,7 @@ class MenuBarHandler():
         # Le menu de Fichier
         self.open_folder_as_serie_action = QAction("Ajouter une série", oizo_window)
         # TODO : Voir si on met des tooltips pour chacun...
-        self.open_folder_as_serie_action.setToolTip("Ajoute un dossier en tant que série")
+        # self.open_folder_as_serie_action.setToolTip("Ajoute un dossier en tant que série")
         self.create_remove_serie_actions()
         self.close_app_action = QAction("Fermer l'application", oizo_window)
 
@@ -48,7 +48,6 @@ class MenuBarHandler():
         # Le menu d'Espèces
         self.add_specie_action = QAction("Ajouter une nouvelle espèce d'oiseaux", oizo_window)
         self.create_remove_specie_actions()
-        self.change_specie_color_action = QAction("Changer la couleur d'une espèce", oizo_window)
 
     # Ca c'est pour qu'on ai un bouton de suppression pour chaque série
     def create_remove_serie_actions(self):
@@ -92,7 +91,6 @@ class MenuBarHandler():
 
         # Le menu d'Especes
         self.add_specie_action.triggered.connect(self.add_specie)
-        self.change_specie_color_action.triggered.connect(self.change_specie_color)
 
     # Finalement on construit tout le menu
     def add_actions(self):
@@ -134,8 +132,7 @@ class MenuBarHandler():
         self.remove_specie_menu.setToolTipsVisible(True)
         for action in self.remove_specie_actions:
             self.remove_specie_menu.addAction(action)
-        #self.menu_especes.addAction(self.change_specie_color_action)
-
+    
     #Quand la série actuelle ou la photo actuelle ou la liste des séries changent
     def update(self):
         # Met à jour l'accès aux actions de détecction
@@ -291,22 +288,22 @@ class MenuBarHandler():
         if id_photo == "":
             print(datas.COLOR_BRIGHT_RED, "Hmmm, it seems detecting on no photo won't work ", id_photo, photo_full_path, datas.COLOR_RESET)
 
-        datas.remove_stats_current_photo(id_photo)
-        print("Detecting oizooos on ", photo_full_path)
+        # datas.remove_stats_current_photo(id_photo)
+        # print("Detecting oizooos on ", photo_full_path)
 
-        if self.model == None:
-            print("Loading YOLO Model... May take a while...")
-            self.model = YOLO("whole/best.pt")
+        # if self.model == None:
+        #     print("Loading YOLO Model... May take a while...")
+        #     self.model = YOLO("whole/best.pt")
         
-        prediction = self.model.predict(photo_full_path, save=False)
+        # prediction = self.model.predict(photo_full_path, save=False)
 
-        boxes_classes = prediction[0].boxes.cls.cpu()
-        boxes_shapes = prediction[0].boxes.xywh.cpu()
-        boxes_probs = prediction[0].boxes.conf.cpu()
+        # boxes_classes = prediction[0].boxes.cls.cpu()
+        # boxes_shapes = prediction[0].boxes.xywh.cpu()
+        # boxes_probs = prediction[0].boxes.conf.cpu()
 
-        for i in range(len(boxes_shapes)):
-            class_, shape, prob = boxes_classes[i], boxes_shapes[i], boxes_probs[i]
-            datas.add_box_photo(id_photo, int(class_), int(shape[0]) - int(float(shape[2])/2), int(shape[1]) - int(float(shape[3])/2), int(shape[2]), int(shape[3]), round(float(prob), 2))
+        # for i in range(len(boxes_shapes)):
+        #     class_, shape, prob = boxes_classes[i], boxes_shapes[i], boxes_probs[i]
+        #     datas.add_box_photo(id_photo, int(class_), int(shape[0]) - int(float(shape[2])/2), int(shape[1]) - int(float(shape[3])/2), int(shape[2]), int(shape[3]), round(float(prob), 2))
 
     def remove_detect_photo(self):
         datas.remove_stats_current_photo()
@@ -340,10 +337,3 @@ class MenuBarHandler():
         
         else:
             print("Aborted.")
-    
-    def change_specie_color(self):
-        # TODO : Add menu to change the color of a specie
-        print("TODO : Add menu to change the color of a specie")
-    
-
-
