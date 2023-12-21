@@ -5,14 +5,20 @@ from functools import partial
 import os
 import csv
 
-# from ultralytics import YOLO
+from ultralytics import YOLO
 
 # import torch
 # import torchvision.transforms as transforms
 
-import onnxruntime
-import numpy as np
-from PIL import Image
+# import onnxruntime
+# import numpy as np
+# from PIL import Image
+
+# from onnxruntime import InferenceSession
+# from PIL import Image, ImageOps
+# from opyv8 import Predictor
+# from pathlib import Path
+# import numpy as np
 
 from PyQt5.QtWidgets import QAction, QMenu, QMainWindow, QMenuBar, QFileDialog, QMessageBox, QInputDialog
 
@@ -299,33 +305,50 @@ class MenuBarHandler():
         datas.remove_stats_current_photo(id_photo)
         print("Detecting oizooos on ", photo_full_path)
 
+        ######### opyv8
+
+        # model = Path("whole/best.onnx")
+        # # List of classes where the index match the class id in the ONNX network
+        # classes = model.parent.joinpath("classes.names").read_text().split("\n")
+        # session = InferenceSession(
+        #     model.as_posix(),
+        #     providers=[
+        #         "AzureExecutionProvider",
+        #         "CPUExecutionProvider",
+        #     ],
+        # )
+
+        # predictor = Predictor(session, classes)
+        # img = Image.open(photo_full_path)
+        # print(predictor.predict(img))
+
         ######### ONNX
         
         # Load the ONNX model
-        onnx_model_path = "whole/best.onnx"  # Replace with the actual path to your ONNX model file
+        # onnx_model_path = "whole/last_best.onnx"  # Replace with the actual path to your ONNX model file
 
-        # Create an ONNX Runtime Inference Session
-        ort_session = onnxruntime.InferenceSession(onnx_model_path)
+        # # Create an ONNX Runtime Inference Session
+        # ort_session = onnxruntime.InferenceSession(onnx_model_path)
 
-        # Define image transformations
-        def preprocess_image(image_path):
-            image = Image.open(image_path).convert("RGB")
-            image = image.resize((640, 640))  # Adjust the size based on your model's input size
-            image = np.array(image).astype(np.float32) / 255.0
-            image = np.transpose(image, (2, 0, 1))  # Change HWC to CHW
-            image = np.expand_dims(image, axis=0)
-            return image
+        # # Define image transformations
+        # def preprocess_image(image_path):
+        #     image = Image.open(image_path).convert("RGB")
+        #     image = image.resize((640, 640))  # Adjust the size based on your model's input size
+        #     image = np.array(image).astype(np.float32) / 255.0
+        #     image = np.transpose(image, (2, 0, 1))  # Change HWC to CHW
+        #     image = np.expand_dims(image, axis=0)
+        #     return image
 
-        # Load and preprocess the image
-        input_data = preprocess_image(photo_full_path)
+        # # Load and preprocess the image
+        # input_data = preprocess_image(photo_full_path)
 
-        # Perform inference
-        ort_inputs = {ort_session.get_inputs()[0].name: input_data}
-        ort_outputs = ort_session.run(None, ort_inputs)
+        # # Perform inference
+        # ort_inputs = {ort_session.get_inputs()[0].name: input_data}
+        # ort_outputs = ort_session.run(None, ort_inputs)
 
-        print(ort_outputs)
+        # print(np.array(ort_outputs).shape)
 
-        # # Process the output
+        # Process the output
         # boxes_classes = ort_outputs[0][0]
         # boxes_shapes = ort_outputs[1][0]
         # boxes_probs = ort_outputs[2][0]
@@ -370,19 +393,19 @@ class MenuBarHandler():
 
         ######## ULTRALYTICS
 
-        # if self.model == None:
-        #     print("Loading YOLO Model... May take a while...")
-        #     self.model = YOLO("whole/best.pt")
+        if self.model == None:
+            print("Loading YOLO Model... May take a while...")
+            self.model = YOLO("whole/model.pt")
         
-        # prediction = self.model.predict(photo_full_path, save=False)
+        prediction = self.model.predict(photo_full_path, save=False)
 
-        # boxes_classes = prediction[0].boxes.cls.cpu()
-        # boxes_shapes = prediction[0].boxes.xywh.cpu()
-        # boxes_probs = prediction[0].boxes.conf.cpu()
+        boxes_classes = prediction[0].boxes.cls.cpu()
+        boxes_shapes = prediction[0].boxes.xywh.cpu()
+        boxes_probs = prediction[0].boxes.conf.cpu()
 
-        # for i in range(len(boxes_shapes)):
-        #     class_, shape, prob = boxes_classes[i], boxes_shapes[i], boxes_probs[i]
-        #     datas.add_box_photo(id_photo, int(class_), int(shape[0]) - int(float(shape[2])/2), int(shape[1]) - int(float(shape[3])/2), int(shape[2]), int(shape[3]), round(float(prob), 2))
+        for i in range(len(boxes_shapes)):
+            class_, shape, prob = boxes_classes[i], boxes_shapes[i], boxes_probs[i]
+            datas.add_box_photo(id_photo, int(class_), int(shape[0]) - int(float(shape[2])/2), int(shape[1]) - int(float(shape[3])/2), int(shape[2]), int(shape[3]), round(float(prob), 2))
 
     def remove_detect_photo(self):
         datas.remove_stats_current_photo()

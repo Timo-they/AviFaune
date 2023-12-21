@@ -235,6 +235,10 @@ BASE_SPECIES: dict = {
     "2": "Goéland Argenté",
     "3": "Mouette Rieuse",
     "4": "Pluvier Argenté",
+    "5": "Grand Cormoran",
+    "6": "Foulque Macroule",
+    "7": "Tadorne de Belon",
+    "8": "Chevalier Gambette"
 }
 
 # C'est le dictionnaire avec toutes les espèces enregistrables
